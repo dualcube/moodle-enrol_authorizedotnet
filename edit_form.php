@@ -30,6 +30,8 @@ require_once($CFG->libdir.'/formslib.php');
 class enrol_authorizedotnet_edit_form extends moodleform {
 
     public function definition() {
+        global $CFG;
+
         $mform = $this->_form;
 
         list($instance, $plugin, $context) = $this->_customdata;
@@ -78,7 +80,7 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);
 
-        if($CFG->version >= '2013111801'){
+        if ($CFG->version >= '2013111801') {
             if (enrol_accessing_via_instance($instance)) {
                 $mform->addElement('static', 'selfwarn', get_string('instanceeditselfwarning', 'core_enrol'),
                                    get_string('instanceeditselfwarningtext', 'core_enrol'));

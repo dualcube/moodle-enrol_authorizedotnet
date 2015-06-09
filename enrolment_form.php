@@ -164,7 +164,7 @@ for ($i = $currentyear; $i <= $currentyear + 10; $i++) {
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2"><input type="submit" name="btn_pay" value="Payment via Authorize.net"></td>
+			<td>&nbsp;</td><td align="left"><input type="submit" name="btn_pay" value="Payment via Authorize.net"></td>
 		</tr>
 	</table>
   <input type="hidden" name="item_name" value="<?php p($coursefullname) ?>" />
