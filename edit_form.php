@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Adds new instance of enrol_authorizedotnet to specified course
- * or edits current instance.
+ * Adds new instance of enrol_authorizedotnet to specified course or edits current instance.
  * 
  * @package    enrol_authorizedotnet
  * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
@@ -26,9 +25,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-
+/**
+ * Sets up moodle edit form class methods.
+ * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class enrol_authorizedotnet_edit_form extends moodleform {
-
+    /**
+     * Sets up moodle form.
+     * @return void
+     */
     public function definition() {
         global $CFG;
 
@@ -91,7 +97,12 @@ class enrol_authorizedotnet_edit_form extends moodleform {
 
         $this->set_data($instance);
     }
-
+    /**
+     * Sets up moodle form validation.
+     * @param stdClass $data
+     * @param stdClass $files
+     * @return $error error list
+     */
     public function validation($data, $files) {
         global $DB, $CFG;
         $errors = parent::validation($data, $files);

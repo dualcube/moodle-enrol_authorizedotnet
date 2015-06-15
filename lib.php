@@ -23,8 +23,16 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Sets up essential methods for plugin.
+ * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class enrol_authorizedotnet_plugin extends enrol_plugin {
+    /**
+     * Lists all currencies available for plugin.
+     * @return $currencies
+     */
     public function get_currencies() {
         $codes = array('AUD', 'USD', 'CAD', 'EUR', 'GBP', 'NZD');
         $currencies = array();
@@ -34,33 +42,62 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
 
         return $currencies;
     }
+    /**
+     * Returns optional enrolment information icons.
+     *
+     * This is used in course list for quick overview of enrolment options.
+     *
+     * We are not using single instance parameter because sometimes
+     * we might want to prevent icon repetition when multiple instances
+     * of one type exist. One instance may also produce several icons.
+     *
+     * @param array $instances all enrol instances of this type in one course
+     * @return array of pix_icon
+     */
     public function get_info_icons(array $instances) {
         return array(new pix_icon('icon', get_string('pluginname', 'enrol_authorizedotnet'), 'enrol_authorizedotnet'));
     }
-
+    /**
+     * Lists all protected user roles.
+     * @return bool(true or false)
+     */
     public function roles_protected() {
         // Users with role assign cap may tweak the roles later.
         return false;
     }
-
+    /**
+     * Defines if user can be unenrolled.
+     * @param stdClass $instance of the plugin
+     * @return bool(true or false)
+     */
     public function allow_unenrol(stdClass $instance) {
         // Users with unenrol cap may unenrol other users manually - requires enrol/authorizedotnet:unenrol.
         return true;
     }
-
+    /**
+     * Defines if user can be managed from admin.
+     * @param stdClass $instance of the plugin
+     * @return bool(true or false)
+     */
     public function allow_manage(stdClass $instance) {
         // Users with manage cap may tweak period and status - requires enrol/authorizedotnet:manage.
         return true;
     }
-
+    /**
+     * Defines if 'enrol me' link will be shown on course page.
+     * @param stdClass $instance of the plugin
+     * @return bool(true or false)
+     */
     public function show_enrolme_link(stdClass $instance) {
         return ($instance->status == ENROL_INSTANCE_ENABLED);
     }
-
     /**
-     * Sets up navigation entries.
+     * Adds navigation links into course admin block.
      *
-     * @param object $instance
+     * By defaults looks for manage links only.
+     *
+     * @param navigation_node $instancesnode
+     * @param stdClass $instance
      * @return void
      */
     public function add_course_navigation($instancesnode, stdClass $instance) {
@@ -116,7 +153,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         // Multiple instances supported - different cost for different roles.
         return new moodle_url('/enrol/authorizedotnet/edit.php', array('courseid' => $courseid));
     }
-
     /**
      * Creates course enrol form, checks if form submitted
      * and enrols user if necessary. It can also redirect.
@@ -203,7 +239,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
 
         return $OUTPUT->box(ob_get_clean());
     }
-
     /**
      * Restore instance and map settings.
      *
@@ -233,20 +268,18 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         }
         $step->set_mapping('enrol', $oldid, $instanceid);
     }
-
     /**
      * Restore user enrolment.
      *
      * @param restore_enrolments_structure_step $step
      * @param stdClass $data
-     * @param stdClass $instance
-     * @param int $oldinstancestatus
+     * @param stdClass $instance 
      * @param int $userid
+     * @param int $oldinstancestatus
      */
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
         $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, $data->status);
     }
-
     /**
      * Gets an array of the user enrolment actions
      *
@@ -272,12 +305,14 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         }
         return $actions;
     }
-
+    /**
+     * Set up cron for the plugin (if any).
+     *
+     */
     public function cron() {
         $trace = new text_progress_trace();
         $this->process_expirations($trace);
     }
-
     /**
      * Is it possible to delete enrol instance via standard UI?
      *
@@ -288,7 +323,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
         return has_capability('enrol/authorizedotnet:config', $context);
     }
-
     /**
      * Is it possible to hide/show enrol instance via standard UI?
      *

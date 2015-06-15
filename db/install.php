@@ -23,7 +23,10 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Sets up installation script.
+ * @return void
+ */
 function xmldb_enrol_authorizedotnet_install() {
     global $CFG, $DB;
 

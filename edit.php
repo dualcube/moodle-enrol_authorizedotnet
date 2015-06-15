@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Adds new instance of enrol_authorizedotnet to specified course
- * or edits current instance.
+ * Adds new instance of enrol_authorizedotnet to specified course or edits current instance.
  *
  * @package    enrol_authorizedotnet
  * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
