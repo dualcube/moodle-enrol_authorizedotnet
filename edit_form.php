@@ -53,9 +53,10 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         $mform->addElement('text', 'cost', get_string('cost', 'enrol_authorizedotnet'), array('size' => 4));
         $mform->setType('cost', PARAM_RAW); // Use unformat_float to get real value.
         $mform->setDefault('cost', format_float($plugin->get_config('cost'), 2, true));
-        $mform->addElement('hidden', 'currency');
-        $mform->setType('currency', PARAM_TEXT);
-        $mform->setDefault('currency', 'USD');
+
+        $currencies = $plugin->get_currencies();
+        $mform->addElement('select', 'currency', get_string('currency', 'enrol_authorizedotnet'), $currencies);
+        $mform->setDefault('currency', $plugin->get_config('currency'));
 
         if ($instance->id) {
             $roles = get_default_enrol_roles($context, $instance->roleid);
@@ -110,7 +111,7 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         list($instance, $plugin, $context) = $this->_customdata;
 
         if (!empty($data['enrolenddate']) and $data['enrolenddate'] < $data['enrolstartdate']) {
-            $errors['enrolenddate'] = get_string('enrolenddaterror', 'enrol_paypal');
+            $errors['enrolenddate'] = get_string('enrolenddaterror', 'enrol_authorizedotnet');
         }
 
         $cost = str_replace(get_string('decsep', 'langconfig'), '.', $data['cost']);

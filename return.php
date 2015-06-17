@@ -23,7 +23,7 @@
  */
 
 require("../../config.php");
-require_once("$CFG->dirroot/enrol/paypal/lib.php");
+require_once("$CFG->dirroot/enrol/authorizedotnet/lib.php");
 
 $id = required_param('id', PARAM_INT);
 
