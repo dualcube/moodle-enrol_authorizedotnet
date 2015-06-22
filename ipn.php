@@ -46,6 +46,17 @@ foreach ($_POST as $key => $value) {
     $responsearray[$key] = $value;
 }
 
+// Check if the response is from authorize.net.
+$merchantmd5hash = get_config('enrol_authorizedotnet', 'merchantmd5hash');
+$loginid = get_config('enrol_authorizedotnet', 'loginid');
+$transactionid = $responsearray['x_trans_id'];
+$amount = $responsearray['x_amount'];
+$generatemd5hash = strtoupper(md5($merchantmd5hash.$loginid.$transactionid.$amount));
+
+if ($generatemd5hash != $responsearray['x_MD5_Hash']) {
+    print_error("We can't validate your transaction. Please try again!!"); die;
+}
+
 $arraycourseinstance = explode('-', $responsearray['x_cust_id']);
 if (empty($arraycourseinstance) || count($arraycourseinstance) < 4) {
     print_error("Received an invalid payment notification!! (Fake payment?)"); die;

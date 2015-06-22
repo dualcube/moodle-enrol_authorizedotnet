@@ -37,8 +37,8 @@ if ($this->get_config('checkproductionmode') == 1) {
 }
 
 $invoice = date('YmdHis');
-$sequence = rand(1, 1000);
-$timestamp = time();
+$_SESSION['sequence'] = $sequence = rand(1, 1000);
+$_SESSION['timestamp'] = $timestamp = time();
 
 if ( phpversion() >= '5.1.2' ) {
     if ($this->get_config('checkproductionmode') == 1) {
