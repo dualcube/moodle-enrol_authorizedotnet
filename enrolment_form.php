@@ -28,11 +28,12 @@ $transactionkey = $this->get_config('transactionkey');
 $amount = $cost;
 $description = $coursefullname;
 $label = "Pay Now";
-$testmode = "true";
 
 if ($this->get_config('checkproductionmode') == 1) {
+    $testmode = "false";
     $url = "https://secure.authorize.net/gateway/transact.dll";
 } else {
+    $testmode = "true";
     $url = "https://test.authorize.net/gateway/transact.dll";
 }
 
