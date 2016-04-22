@@ -28,12 +28,13 @@ $transactionkey = $this->get_config('transactionkey');
 $amount = $cost;
 $description = $coursefullname;
 $label = "Pay Now";
-$testmode = "true";
 
 if ($this->get_config('checkproductionmode') == 1) {
     $url = "https://secure.authorize.net/gateway/transact.dll";
+    $testmode = "false";
 } else {
     $url = "https://test.authorize.net/gateway/transact.dll";
+    $testmode = "true";
 }
 
 $invoice = date('YmdHis');
