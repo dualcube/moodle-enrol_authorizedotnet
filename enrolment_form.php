@@ -30,11 +30,9 @@ $description = $coursefullname;
 $label = "Pay Now";
 
 if ($this->get_config('checkproductionmode') == 1) {
-    $testmode = "false";
     $url = "https://secure.authorize.net/gateway/transact.dll";
     $testmode = "false";
 } else {
-    $testmode = "true";
     $url = "https://test.authorize.net/gateway/transact.dll";
     $testmode = "true";
 }
