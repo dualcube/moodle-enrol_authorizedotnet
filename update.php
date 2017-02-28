@@ -42,6 +42,8 @@ $id = required_param('id', PARAM_INT);
 $response = $DB->get_record('enrol_authorizedotnet', array('id' => $id));
 $responsearray = json_decode($response->auth_json, true);
 
+//print_r($responsearray);
+
 // Check if the response is from authorize.net.
 $merchantmd5hash = get_config('enrol_authorizedotnet', 'merchantmd5hash');
 $loginid = get_config('enrol_authorizedotnet', 'loginid');
@@ -50,6 +52,8 @@ $amount = $responsearray['x_amount'];
 $generatemd5hash = strtoupper(md5($merchantmd5hash.$loginid.$transactionid.$amount));
 $arraycourseinstance = explode('-', $responsearray['x_cust_id']);
 
+// Required for message_send.
+$PAGE->set_context(context_system::instance());
 
 if ($generatemd5hash != $responsearray['x_MD5_Hash']) {
     print_error("We can't validate your transaction. Please try again!!"); die;
@@ -93,6 +97,85 @@ $enrolauthorizedotnet->duty = $responsearray['x_duty'];
 
 if ($responsearray['x_response_code'] == 1) {
     $enrolauthorizedotnet->payment_status = 'Approved';
+    
+    $PAGE->set_context($context);
+    $coursecontext = context_course::instance($course->id, IGNORE_MISSING);
+
+    if ($users = get_users_by_capability($context, 'moodle/course:update', 'u.*', 'u.id ASC',
+                                         '', '', '', '', false, true)) {
+        $users = sort_by_roleassignment_authority($users, $context);
+        $teacher = array_shift($users);
+    } else {
+        $teacher = false;
+    }
+
+    $plugin = enrol_get_plugin('authorizedotnet');
+
+    $mailstudents = $plugin->get_config('mailstudents');
+    $mailteachers = $plugin->get_config('mailteachers');
+    $mailadmins   = $plugin->get_config('mailadmins');
+    $shortname = format_string($course->shortname, true, array('context' => $context));
+
+    if (!empty($mailstudents)) {
+        $a = new stdClass();
+        $a->coursename = format_string($course->fullname, true, array('context' => $coursecontext));
+        $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id";
+
+        $eventdata = new \core\message\message();
+        $eventdata->courseid          = $course->id;
+        $eventdata->modulename        = 'moodle';
+        $eventdata->component         = 'enrol_authorizedotnet';
+        $eventdata->name              = 'authorizedotnet_enrolment';
+        $eventdata->userfrom          = empty($teacher) ? core_user::get_noreply_user() : $teacher;
+        $eventdata->userto            = $user;
+        $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
+        $eventdata->fullmessage       = get_string('welcometocoursetext', '', $a);
+        $eventdata->fullmessageformat = FORMAT_PLAIN;
+        $eventdata->fullmessagehtml   = '';
+        $eventdata->smallmessage      = '';
+        message_send($eventdata);
+
+    }
+
+    if (!empty($mailteachers) && !empty($teacher)) {
+        $a->course = format_string($course->fullname, true, array('context' => $coursecontext));
+        $a->user = fullname($user);
+
+        $eventdata = new \core\message\message();
+        $eventdata->courseid          = $course->id;
+        $eventdata->modulename        = 'moodle';
+        $eventdata->component         = 'enrol_authorizedotnet';
+        $eventdata->name              = 'authorizedotnet_enrolment';
+        $eventdata->userfrom          = $user;
+        $eventdata->userto            = $teacher;
+        $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
+        $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol', $a);
+        $eventdata->fullmessageformat = FORMAT_PLAIN;
+        $eventdata->fullmessagehtml   = '';
+        $eventdata->smallmessage      = '';
+        message_send($eventdata);
+    }
+
+    if (!empty($mailadmins)) {
+        $a->course = format_string($course->fullname, true, array('context' => $coursecontext));
+        $a->user = fullname($user);
+        $admins = get_admins();
+        foreach ($admins as $admin) {
+            $eventdata = new \core\message\message();
+            $eventdata->courseid          = $course->id;
+            $eventdata->modulename        = 'moodle';
+            $eventdata->component         = 'enrol_authorizedotnet';
+            $eventdata->name              = 'authorizedotnet_enrolment';
+            $eventdata->userfrom          = $user;
+            $eventdata->userto            = $admin;
+            $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
+            $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol', $a);
+            $eventdata->fullmessageformat = FORMAT_PLAIN;
+            $eventdata->fullmessagehtml   = '';
+            $eventdata->smallmessage      = '';
+            message_send($eventdata);
+        }
+    }
 }
 if ($responsearray['x_response_code'] == 2) {
     $enrolauthorizedotnet->payment_status = 'Declined';
@@ -153,6 +236,8 @@ if ($responsearray['x_response_code'] == 1) {
     $roleassignments->sortorder = 0;
     $ret3 = $DB->insert_record('role_assignments', $roleassignments, false);
 }
+
+
 echo '<script type="text/javascript">
      window.location.href="'.$CFG->wwwroot.'/enrol/authorizedotnet/return.php?id='.$arraycourseinstance[0].'";
      </script>';
