@@ -122,8 +122,6 @@ if ($responsearray['x_response_code'] == 1) {
         $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id";
 
         $eventdata = new \core\message\message();
-        $eventdata->courseid          = $course->id;
-        $eventdata->modulename        = 'moodle';
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
         $eventdata->userfrom          = empty($teacher) ? core_user::get_noreply_user() : $teacher;
@@ -142,8 +140,6 @@ if ($responsearray['x_response_code'] == 1) {
         $a->user = fullname($user);
 
         $eventdata = new \core\message\message();
-        $eventdata->courseid          = $course->id;
-        $eventdata->modulename        = 'moodle';
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
         $eventdata->userfrom          = $user;
@@ -162,8 +158,6 @@ if ($responsearray['x_response_code'] == 1) {
         $admins = get_admins();
         foreach ($admins as $admin) {
             $eventdata = new \core\message\message();
-            $eventdata->courseid          = $course->id;
-            $eventdata->modulename        = 'moodle';
             $eventdata->component         = 'enrol_authorizedotnet';
             $eventdata->name              = 'authorizedotnet_enrolment';
             $eventdata->userfrom          = $user;
