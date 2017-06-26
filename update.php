@@ -121,7 +121,11 @@ if ($responsearray['x_response_code'] == 1) {
         $a->coursename = format_string($course->fullname, true, array('context' => $coursecontext));
         $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id";
 
-        $eventdata = new \core\message\message();
+        if ($CFG->version >= 2015051100) {
+            $eventdata = new \core\message\message();
+        } else {
+            $eventdata = new stdClass();
+        }
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
         $eventdata->userfrom          = empty($teacher) ? core_user::get_noreply_user() : $teacher;
@@ -139,7 +143,11 @@ if ($responsearray['x_response_code'] == 1) {
         $a->course = format_string($course->fullname, true, array('context' => $coursecontext));
         $a->user = fullname($user);
 
-        $eventdata = new \core\message\message();
+        if ($CFG->version >= 2015051100) {
+            $eventdata = new \core\message\message();
+        } else {
+            $eventdata = new stdClass();
+        }
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
         $eventdata->userfrom          = $user;
@@ -157,7 +165,12 @@ if ($responsearray['x_response_code'] == 1) {
         $a->user = fullname($user);
         $admins = get_admins();
         foreach ($admins as $admin) {
-            $eventdata = new \core\message\message();
+        
+            if ($CFG->version >= 2015051100) {
+                $eventdata = new \core\message\message();
+            } else {
+                $eventdata = new stdClass();
+            }
             $eventdata->component         = 'enrol_authorizedotnet';
             $eventdata->name              = 'authorizedotnet_enrolment';
             $eventdata->userfrom          = $user;
