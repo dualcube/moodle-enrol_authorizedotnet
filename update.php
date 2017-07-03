@@ -220,30 +220,16 @@ $enrolauthorizedotnet->timeupdated = time();
 /* Inserting value to enrol_authorizedotnet table */
 $ret1 = $DB->update_record("enrol_authorizedotnet", $enrolauthorizedotnet, false);
 
-
-if ($responsearray['x_response_code'] == 1) {
-    /* Inserting value to user_enrolments table */
-    $userenrolments->status = 0;
-    $userenrolments->enrolid = $arraycourseinstance[2];
-    $userenrolments->userid = $arraycourseinstance[1];
-    $userenrolments->timestart = time();
-    $userenrolments->timeend = 0;
-    $userenrolments->modifierid = 2;
-    $userenrolments->timecreated = time();
-    $userenrolments->timemodified = time();
-    $ret2 = $DB->insert_record("user_enrolments", $userenrolments, false);
-    /* Inserting value to role_assignments table */
-    $roleassignments->roleid = 5;
-    $roleassignments->contextid = $arraycourseinstance[3];
-    $roleassignments->userid = $arraycourseinstance[1];
-    $roleassignments->timemodified = time();
-    $roleassignments->modifierid = 2;
-    $roleassignments->component = '';
-    $roleassignments->itemid = 0;
-    $roleassignments->sortorder = 0;
-    $ret3 = $DB->insert_record('role_assignments', $roleassignments, false);
+if ($plugininstance->enrolperiod) {
+   $timestart = time();
+   $timeend   = $timestart + $plugin_instance->enrolperiod;
+} else {
+   $timestart = 0;
+   $timeend   = 0;
 }
 
+/* Enrol User */
+$plugin->enrol_user($plugininstance, $user->id, $plugininstance->roleid, $timestart, $timeend);
 
 echo '<script type="text/javascript">
      window.location.href="'.$CFG->wwwroot.'/enrol/authorizedotnet/return.php?id='.$arraycourseinstance[0].'";
