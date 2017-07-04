@@ -42,8 +42,6 @@ $id = required_param('id', PARAM_INT);
 $response = $DB->get_record('enrol_authorizedotnet', array('id' => $id));
 $responsearray = json_decode($response->auth_json, true);
 
-//print_r($responsearray);
-
 // Check if the response is from authorize.net.
 $merchantmd5hash = get_config('enrol_authorizedotnet', 'merchantmd5hash');
 $loginid = get_config('enrol_authorizedotnet', 'loginid');
@@ -81,7 +79,6 @@ if (! $plugininstance = $DB->get_record("enrol", array("id" => $arraycourseinsta
 }
 
 
-
 $enrolauthorizedotnet = $userenrolments = $roleassignments = new stdClass();
 
 $enrolauthorizedotnet->id = $id;
@@ -92,7 +89,6 @@ $enrolauthorizedotnet->instanceid = $arraycourseinstance[2];
 $enrolauthorizedotnet->amount = $responsearray['x_amount'];
 $enrolauthorizedotnet->tax = $responsearray['x_tax'];
 $enrolauthorizedotnet->duty = $responsearray['x_duty'];
-
 
 
 if ($responsearray['x_response_code'] == 1) {
@@ -128,6 +124,7 @@ if ($responsearray['x_response_code'] == 1) {
         }
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
+        $eventdata->courseid          = $course->id;
         $eventdata->userfrom          = empty($teacher) ? core_user::get_noreply_user() : $teacher;
         $eventdata->userto            = $user;
         $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
@@ -150,6 +147,7 @@ if ($responsearray['x_response_code'] == 1) {
         }
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
+        $eventdata->courseid          = $course->id;
         $eventdata->userfrom          = $user;
         $eventdata->userto            = $teacher;
         $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
@@ -173,6 +171,7 @@ if ($responsearray['x_response_code'] == 1) {
             }
             $eventdata->component         = 'enrol_authorizedotnet';
             $eventdata->name              = 'authorizedotnet_enrolment';
+            $eventdata->courseid          = $course->id;
             $eventdata->userfrom          = $user;
             $eventdata->userto            = $admin;
             $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
@@ -220,30 +219,16 @@ $enrolauthorizedotnet->timeupdated = time();
 /* Inserting value to enrol_authorizedotnet table */
 $ret1 = $DB->update_record("enrol_authorizedotnet", $enrolauthorizedotnet, false);
 
-
-if ($responsearray['x_response_code'] == 1) {
-    /* Inserting value to user_enrolments table */
-    $userenrolments->status = 0;
-    $userenrolments->enrolid = $arraycourseinstance[2];
-    $userenrolments->userid = $arraycourseinstance[1];
-    $userenrolments->timestart = time();
-    $userenrolments->timeend = 0;
-    $userenrolments->modifierid = 2;
-    $userenrolments->timecreated = time();
-    $userenrolments->timemodified = time();
-    $ret2 = $DB->insert_record("user_enrolments", $userenrolments, false);
-    /* Inserting value to role_assignments table */
-    $roleassignments->roleid = 5;
-    $roleassignments->contextid = $arraycourseinstance[3];
-    $roleassignments->userid = $arraycourseinstance[1];
-    $roleassignments->timemodified = time();
-    $roleassignments->modifierid = 2;
-    $roleassignments->component = '';
-    $roleassignments->itemid = 0;
-    $roleassignments->sortorder = 0;
-    $ret3 = $DB->insert_record('role_assignments', $roleassignments, false);
+if ($plugininstance->enrolperiod) {
+   $timestart = time();
+   $timeend   = $timestart + $plugin_instance->enrolperiod;
+} else {
+    $timestart = 0;
+    $timeend   = 0;
 }
-
+  
+/* Enrol User */
+$plugin->enrol_user($plugininstance, $user->id, $plugininstance->roleid, $timestart, $timeend);
 
 echo '<script type="text/javascript">
      window.location.href="'.$CFG->wwwroot.'/enrol/authorizedotnet/return.php?id='.$arraycourseinstance[0].'";
