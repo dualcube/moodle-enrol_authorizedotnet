@@ -41,11 +41,10 @@ if (empty($_POST) or !empty($_GET)) {
     print_error("Sorry, you can not use the script that way."); die;
 }
 
-
 $enrolauthorizedotnet = new stdClass();
-$enrolauthorizedotnet->auth_json = json_encode($_POST);
+$postdata = array_map('utf8_encode', $_POST);
+$enrolauthorizedotnet->auth_json = json_encode($postdata);
 $enrolauthorizedotnet->timeupdated = time();
-
 
 $ret1 = $DB->insert_record("enrol_authorizedotnet", $enrolauthorizedotnet, true);
 
