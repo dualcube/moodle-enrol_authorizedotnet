@@ -24,6 +24,8 @@
 
 $loginid = $this->get_config('loginid');
 $transactionkey = $this->get_config('transactionkey');
+$sigkey = $this->get_config('signatureKey');
+$sigkey = hex2bin($sigkey);
 
 $amount = $cost;
 $description = $coursefullname;
@@ -43,11 +45,15 @@ $_SESSION['timestamp'] = $timestamp = time();
 
 if ( phpversion() >= '5.1.2' ) {
     if ($this->get_config('checkproductionmode') == 1) {
+    		/*
         $fingerprint = hash_hmac("md5"
                        , $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^" . $instance->currency
-                       , $transactionkey);
+                       , $transactionkey);*/
+                       
+				$fingerprint = hash_hmac("sha512", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $sigkey);
     } else {
-        $fingerprint = hash_hmac("md5", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $transactionkey);
+        //$fingerprint = hash_hmac("md5", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $transactionkey);
+        $fingerprint = hash_hmac("sha512", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $sigkey);
     }
 } else {
     if ($this->get_config('checkproductionmode') == 1) {

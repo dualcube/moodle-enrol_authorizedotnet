@@ -43,3 +43,10 @@ Click Response/Receipt URLs under Transaction Format Settings.
 Click Add URL.
 Enter the new URL. This URL must start with either "http://" or "https://".
 Click Submit.
+
+To generate signature key:
+Log into the Merchant Interface at https://account.authorize.net/ or Sandbox Interface https://sandbox.authorize.net/.
+Click Account from the main toolbar.
+Click API Credential & key option.
+Select your Secret Answer Key(For all test account the answer will be Simon) and choose new signature key option.You can see an option to disable the old signature key(If you want to disable the old one you can do it by checking the box).
+Then press submit to generate your signature key.

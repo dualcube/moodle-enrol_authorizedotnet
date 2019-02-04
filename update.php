@@ -42,20 +42,29 @@ $id = required_param('id', PARAM_INT);
 $response = $DB->get_record('enrol_authorizedotnet', array('id' => $id));
 $responsearray = json_decode($response->auth_json, true);
 
+
 // Check if the response is from authorize.net.
-$merchantmd5hash = get_config('enrol_authorizedotnet', 'merchantmd5hash');
+
+//$merchantmd5hash = get_config('enrol_authorizedotnet', 'merchantmd5hash');
+
+$signatureKey = get_config('enrol_authorizedotnet', 'signatureKey');
+$signatureKey = hex2bin($signatureKey);
+
+
 $loginid = get_config('enrol_authorizedotnet', 'loginid');
 $transactionid = $responsearray['x_trans_id'];
 $amount = $responsearray['x_amount'];
-$generatemd5hash = strtoupper(md5($merchantmd5hash.$loginid.$transactionid.$amount));
+//$generatemd5hash = strtoupper(md5($merchantmd5hash.$loginid.$transactionid.$amount));
 $arraycourseinstance = explode('-', $responsearray['x_cust_id']);
 
 // Required for message_send.
 $PAGE->set_context(context_system::instance());
 
+/*
 if ($generatemd5hash != $responsearray['x_MD5_Hash']) {
     print_error("We can't validate your transaction. Please try again!!"); die;
 }
+*/
 
 $arraycourseinstance = explode('-', $responsearray['x_cust_id']);
 if (empty($arraycourseinstance) || count($arraycourseinstance) < 4) {

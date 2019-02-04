@@ -35,9 +35,17 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/transactionkey',
                    get_string('transactionkey', 'enrol_authorizedotnet'),
                    'Copy API Transaction Key from merchant account & paste here', '', PARAM_RAW));
+    /*
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/merchantmd5hash',
                    get_string('merchantmd5hash', 'enrol_authorizedotnet'),
                    'Copy secret MD5 Hash from merchant account & paste here', '', PARAM_RAW));
+                   */
+    
+    $settings->add(new admin_setting_configtext('enrol_authorizedotnet/signatureKey',
+                   get_string('signatureKey', 'enrol_authorizedotnet'),
+                   'Generate signatureKey from merchant account & paste here', '', PARAM_RAW));
+    
+    
     $settings->add(new admin_setting_configcheckbox('enrol_authorizedotnet/checkproductionmode',
                    get_string('checkproductionmode', 'enrol_authorizedotnet'), '', 0));
     $settings->add(new admin_setting_configcheckbox('enrol_authorizedotnet/mailstudents',
