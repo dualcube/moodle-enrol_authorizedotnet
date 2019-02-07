@@ -25,7 +25,13 @@
 $loginid = $this->get_config('loginid');
 $transactionkey = $this->get_config('transactionkey');
 $sigkey = $this->get_config('signatureKey');
-$sigkey = hex2bin($sigkey);
+if ( phpversion() >= '5.1.2' ) {
+    $sigkey = hex2bin($sigkey);
+}
+else
+{
+    $sigkey = pack("H*" , $sigkey);
+}
 
 $amount = $cost;
 $description = $coursefullname;
@@ -57,13 +63,13 @@ if ( phpversion() >= '5.1.2' ) {
     }
 } else {
     if ($this->get_config('checkproductionmode') == 1) {
-        $fingerprint = bin2hex(mhash(MHASH_MD5
+        $fingerprint = bin2hex(mhash(MHASH_SHA512
                        , $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^" . $instance->currency
-                       , $transactionkey));
+                       , $sigkey));
     } else {
-        $fingerprint = bin2hex(mhash(MHASH_MD5
+        $fingerprint = bin2hex(mhash(MHASH_SHA512
                        , $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^"
-                       , $transactionkey));
+                       , $sigkey));
     }
 }
 ?>

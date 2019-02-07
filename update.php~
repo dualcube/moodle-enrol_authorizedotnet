@@ -133,7 +133,7 @@ if ($responsearray['x_response_code'] == 1) {
         }
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
-        //$eventdata->courseid          = $course->id;
+        $eventdata->courseid          = $course->id;
         $eventdata->userfrom          = empty($teacher) ? core_user::get_noreply_user() : $teacher;
         $eventdata->userto            = $user;
         $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
@@ -156,7 +156,7 @@ if ($responsearray['x_response_code'] == 1) {
         }
         $eventdata->component         = 'enrol_authorizedotnet';
         $eventdata->name              = 'authorizedotnet_enrolment';
-        //$eventdata->courseid          = $course->id;
+        $eventdata->courseid          = $course->id;
         $eventdata->userfrom          = $user;
         $eventdata->userto            = $teacher;
         $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
@@ -180,7 +180,7 @@ if ($responsearray['x_response_code'] == 1) {
             }
             $eventdata->component         = 'enrol_authorizedotnet';
             $eventdata->name              = 'authorizedotnet_enrolment';
-            //$eventdata->courseid          = $course->id;
+            $eventdata->courseid          = $course->id;
             $eventdata->userfrom          = $user;
             $eventdata->userto            = $admin;
             $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
