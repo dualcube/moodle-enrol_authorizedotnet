@@ -56,7 +56,7 @@ if ( phpversion() >= '5.1.2' ) {
                        , $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^" . $instance->currency
                        , $transactionkey);*/
                        
-				$fingerprint = hash_hmac("sha512", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $sigkey);
+				$fingerprint = hash_hmac("sha512", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^" . $instance->currency, $sigkey);
     } else {
         //$fingerprint = hash_hmac("md5", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $transactionkey);
         $fingerprint = hash_hmac("sha512", $loginid . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $sigkey);
