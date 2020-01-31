@@ -1,0 +1,9 @@
+[19-Dec-2019 09:30:04 Indian/Antananarivo] Debugging: Coding problem: $PAGE->context was not set. You may have forgotten to call require_login() or $PAGE->set_context(). The page may not display correctly as a result in 
+* line 503 of /lib/pagelib.php: call to debugging()
+* line 1542 of /lib/pagelib.php: call to moodle_page->magic_get_context()
+* line 1940 of /lib/setuplib.php: call to moodle_page->initialise_theme_and_output()
+* line 49 of /enrol/authorizedotnet/pay_process.php: call to bootstrap_renderer->__call()
+
+[19-Dec-2019 09:30:04 Indian/Antananarivo] PHP Warning:  SimpleXMLElement::__construct(): namespace warning : xmlns: URI AnetApi/xml/v1/schema/AnetApiSchema.xsd is not absolute in /home/demodualcube/public_html/moodle38/enrol/authorizedotnet/pay_process.php on line 72
+[19-Dec-2019 09:30:04 Indian/Antananarivo] PHP Warning:  SimpleXMLElement::__construct(): &lt;createTransactionRequest xmlns=&quot;AnetApi/xml/v1/schema/AnetApiSchema.xsd&quot;&gt; in /home/demodualcube/public_html/moodle38/enrol/authorizedotnet/pay_process.php on line 72
+[19-Dec-2019 09:30:04 Indian/Antananarivo] PHP Warning:  SimpleXMLElement::__construct():                                                                          ^ in /home/demodualcube/public_html/moodle38/enrol/authorizedotnet/pay_process.php on line 72

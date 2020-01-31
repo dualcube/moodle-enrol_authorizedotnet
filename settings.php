@@ -41,9 +41,9 @@ if ($ADMIN->fulltree) {
                    'Copy secret MD5 Hash from merchant account & paste here', '', PARAM_RAW));
                    */
     
-    $settings->add(new admin_setting_configtext('enrol_authorizedotnet/signatureKey',
-                   get_string('signatureKey', 'enrol_authorizedotnet'),
-                   'Generate signatureKey from merchant account & paste here', '', PARAM_RAW));
+    $settings->add(new admin_setting_configtext('enrol_authorizedotnet/clientkey',
+                   get_string('clientkey', 'enrol_authorizedotnet'),
+                   'Generate clientkey from merchant account & paste here', '', PARAM_RAW));
     
     
     $settings->add(new admin_setting_configcheckbox('enrol_authorizedotnet/checkproductionmode',

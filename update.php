@@ -31,7 +31,7 @@
 
 require("../../config.php");
 require_once("lib.php");
-require_once($CFG->libdir.'/eventslib.php');
+//require_once($CFG->libdir.'/eventslib.php');
 require_once($CFG->libdir.'/enrollib.php');
 require_once($CFG->libdir . '/filelib.php');
 
@@ -45,15 +45,12 @@ $responsearray = json_decode($response->auth_json, true);
 
 // Check if the response is from authorize.net.
 
-//$merchantmd5hash = get_config('enrol_authorizedotnet', 'merchantmd5hash');
 
-$signatureKey = get_config('enrol_authorizedotnet', 'signatureKey');
-$signatureKey = hex2bin($signatureKey);
 
 
 $loginid = get_config('enrol_authorizedotnet', 'loginid');
-$transactionid = $responsearray['x_trans_id'];
-$amount = $responsearray['x_amount'];
+$transactionid = $responsearray['transId'];
+$amount = $responsearray['amount'];
 //$generatemd5hash = strtoupper(md5($merchantmd5hash.$loginid.$transactionid.$amount));
 $arraycourseinstance = explode('-', $responsearray['x_cust_id']);
 
@@ -95,12 +92,12 @@ $enrolauthorizedotnet->item_name = $responsearray['x_description'];
 $enrolauthorizedotnet->courseid = $arraycourseinstance[0];
 $enrolauthorizedotnet->userid = $arraycourseinstance[1];
 $enrolauthorizedotnet->instanceid = $arraycourseinstance[2];
-$enrolauthorizedotnet->amount = $responsearray['x_amount'];
-$enrolauthorizedotnet->tax = $responsearray['x_tax'];
-$enrolauthorizedotnet->duty = $responsearray['x_duty'];
+$enrolauthorizedotnet->amount = $responsearray['amount'];
+// $enrolauthorizedotnet->tax = $responsearray['x_tax'];
+// $enrolauthorizedotnet->duty = $responsearray['x_duty'];
 
 
-if ($responsearray['x_response_code'] == 1) {
+if ($responsearray['responseCode'] == 1) {
     $enrolauthorizedotnet->payment_status = 'Approved';
     
     $PAGE->set_context($context);
@@ -192,25 +189,25 @@ if ($responsearray['x_response_code'] == 1) {
         }
     }
 }
-if ($responsearray['x_response_code'] == 2) {
+if ($responsearray['responseCode'] == 2) {
     $enrolauthorizedotnet->payment_status = 'Declined';
 }
-if ($responsearray['x_response_code'] == 3) {
+if ($responsearray['responseCode'] == 3) {
     $enrolauthorizedotnet->payment_status = 'Error';
 }
-if ($responsearray['x_response_code'] == 4) {
+if ($responsearray['responseCode'] == 4) {
     $enrolauthorizedotnet->payment_status = 'Held for Review';
 }
 
 
-$enrolauthorizedotnet->response_code = $responsearray['x_response_code'];
-$enrolauthorizedotnet->response_reason_code = $responsearray['x_response_reason_code'];
-$enrolauthorizedotnet->response_reason_text = $responsearray['x_response_reason_text'];
-$enrolauthorizedotnet->auth_code = $responsearray['x_auth_code'];
-$enrolauthorizedotnet->trans_id = $responsearray['x_trans_id'];
-$enrolauthorizedotnet->method = $responsearray['x_method'];
-$enrolauthorizedotnet->account_number = isset($responsearray['x_account_number']) ? $responsearray['x_account_number'] : '';
-$enrolauthorizedotnet->card_type = isset($responsearray['x_card_type']) ? $responsearray['x_card_type'] : '';
+$enrolauthorizedotnet->response_code = $responsearray['responseCode'];
+// $enrolauthorizedotnet->response_reason_code = $responsearray['x_response_reason_code'];
+// $enrolauthorizedotnet->response_reason_text = $responsearray['x_response_reason_text'];
+$enrolauthorizedotnet->auth_code = $responsearray['authCode'];
+$enrolauthorizedotnet->trans_id = $responsearray['transId'];
+// $enrolauthorizedotnet->method = $responsearray['x_method'];
+$enrolauthorizedotnet->account_number = isset($responsearray['accountNumber']) ? $responsearray['accountNumber'] : '';
+$enrolauthorizedotnet->card_type = isset($responsearray['accountType']) ? $responsearray['accountType'] : '';
 $enrolauthorizedotnet->first_name = isset($responsearray['x_first_name']) ? $responsearray['x_first_name'] : '';
 $enrolauthorizedotnet->last_name = isset($responsearray['x_last_name']) ? $responsearray['x_last_name'] : '';
 $enrolauthorizedotnet->company = isset($responsearray['x_company']) ? $responsearray['x_company'] : '';
@@ -223,7 +220,7 @@ $enrolauthorizedotnet->zip = isset($responsearray['x_zip']) ? $responsearray['x_
 $enrolauthorizedotnet->country = isset($responsearray['x_country']) ? $responsearray['x_country'] : '';
 $enrolauthorizedotnet->email = isset($responsearray['x_email']) ? $responsearray['x_email'] : '';
 $enrolauthorizedotnet->invoice_num = $responsearray['x_invoice_num'];
-$enrolauthorizedotnet->test_request = ($responsearray['x_test_request'] == 'true') ? '1' : '0';
+// $enrolauthorizedotnet->test_request = ($responsearray['x_test_request'] == 'true') ? '1' : '0';
 $enrolauthorizedotnet->timeupdated = time();
 /* Inserting value to enrol_authorizedotnet table */
 $ret1 = $DB->update_record("enrol_authorizedotnet", $enrolauthorizedotnet, false);
