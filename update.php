@@ -227,12 +227,12 @@ $ret1 = $DB->update_record("enrol_authorizedotnet", $enrolauthorizedotnet, false
 
 if ($plugininstance->enrolperiod) {
    $timestart = time();
-   $timeend   = $timestart + $plugin_instance->enrolperiod;
+   $timeend   = $timestart + $plugininstance->enrolperiod;
 } else {
     $timestart = 0;
     $timeend   = 0;
 }
-  
+
 /* Enrol User */
 $plugin->enrol_user($plugininstance, $user->id, $plugininstance->roleid, $timestart, $timeend);
 
