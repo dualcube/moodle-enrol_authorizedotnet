@@ -94,7 +94,7 @@ if(isset($_POST['paIndicator'])){
     //$transRequestXml->transactionRequest->cardholderAuthentication->addChild('cardholderAuthenticationValue',$_POST['paValue']);
 }
 
-$url="https://apitest.authorize.net/xml/v1/request.api";
+$url="https://api.authorize.net/xml/v1/request.api";
 
 //print_r($transRequestXml->asXML());
 
