@@ -107,11 +107,10 @@ try{    //setting the curl parameters.
         curl_setopt($ch, CURLOPT_POSTFIELDS, $transRequestXml->asXML());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
-    // The following two curl SSL options are set to "false" for ease of development/debug purposes only.
-    // Any code used in production should either remove these lines or set them to the appropriate
-    // values to properly use secure connections for PCI-DSS compliance.
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);    //for production, set value to true or 1
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);    //for production, set value to 2
+    // The following two curl SSL options can be set to "false" for ease of development/debug purposes only.
+    // Any code used in production should leave these as-is to properly use secure connections for PCI-DSS compliance.
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
         $content = curl_exec($ch);
         if (FALSE === $content)
