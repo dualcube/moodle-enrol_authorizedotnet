@@ -21,100 +21,53 @@
  * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+global $PAGE;
 $loginid = $this->get_config('loginid');
 $transactionkey = $this->get_config('transactionkey');
 $clientkey = $this->get_config('clientkey');
-
 $auth_modess = $this->get_config('checkproductionmode');
-if($auth_modess == 1) {
- $s_path = "https://js.authorize.net/v1/Accept.js";
-}
-elseif($auth_modess == 0) {
-    $s_path = "https://jstest.authorize.net/v1/Accept.js";
-}
 $amount = $cost;
 $description = $coursefullname;
-
 $invoice = date('YmdHis');
-$_SESSION['sequence'] = $sequence = rand(1, 1000);
-$_SESSION['timestamp'] = $timestamp = time();
-
+$sequence = rand(1, 1000);
+$timestamp = time();
+$error_payment_text = get_string('error_payment', 'enrol_authorizedotnet');
 ?>
 <!-- Load the jQuery library from the Google CDN -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js">
 </script>
-<!-- Load the Accept.js CDN -->
-<script type="text/javascript"
-    src="<?php echo $s_path;?>"
-    charset="utf-8">
-</script>
 
 <div align="center">
-<p>This course requires a payment for entry.</p>
-<p><b><?php echo $instancename; ?></b></p>
-<p><b><?php echo get_string("cost").": {$instance->currency} {$localisedcost}"; ?></b></p>
+  <p><?php echo get_string('requires_payment', 'enrol_authorizedotnet'); ?></p>
+  <p><b><?php echo $instancename; ?></b></p>
+  <p><b><?php echo get_string("cost").": {$instance->currency} {$localisedcost}"; ?></b></p>
 
-<p>&nbsp;</p>
-<p><img alt="Authorize.net" src="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/authorize-net-logo.jpg" /></p>
-<p>&nbsp;</p>
-
-<div class="popup">
-<div class="popuptext" id="myPopup">
-    <form id="paymentForm"
-        method="POST"
-        action="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pay_process.php"
-    >
-	    <h3>Make Your Payment</h3>
-	    
-	    <button type="button" id="card_btn">Card Payment</button>
-	    <button type="button" id="account_btn">Account Payment</button>
-	    
-	    <div id="card_form">
-	    <input type="text" name="cardNumber" id="cardNumber" placeholder="cardNumber"/> <br><br>
-        <input type="text" name="expMonth" id="expMonth" placeholder="expMonth"/> <br><br>
-        <input type="text" name="expYear" id="expYear" placeholder="expYear"/> <br><br>
-        <input type="text" name="cardCode" id="cardCode" placeholder="cardCode"/> 
+  <p>&nbsp;</p>
+  <p><img alt="Authorize.net" src="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/authorize-net-logo.jpg" /></p>
+  <p>&nbsp;</p>
+  <div class="popup">
+    <div class="popuptext" id="net-pay-popup">
+        <h3><?php echo get_string('make_payment', 'enrol_authorizedotnet'); ?></h3>
+        <div id="payment_error"></div>
+        <div id="card_form">
+            <input type="text" name="cardNumber" id="cardNumber" placeholder="<?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?>"/> <br><br>
+            <input type="text" name="expMonth" id="expMonth" placeholder="<?php echo get_string('expmonth', 'enrol_authorizedotnet'); ?>"/> <br><br>
+            <input type="text" name="expYear" id="expYear" placeholder="<?php echo get_string('expyear', 'enrol_authorizedotnet'); ?>"/> <br><br>
+            <input type="text" name="cardCode" id="cardCode" placeholder="<?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?>"/> 
         </div>
-        
-        <div id="account_form">
-        <input type="text" name="accountNumber" id="accountNumber" placeholder="accountNumber"/> <br><br>
-        <input type="text" name="routingNumber" id="routingNumber" placeholder="routingNumber"/> <br><br>
-        <input type="text" name="nameOnAccount" id="nameOnAccount" placeholder="nameOnAccount"/> <br><br>
-        <input type="text" name="accountType" id="accountType" placeholder="accountType"/> 
-	    </div>
-	    
-	    <input type="hidden" name="dataValue" id="dataValue" />
-        <input type="hidden" name="dataDesc" id="dataDescriptor" />
-
-		<input type="hidden" name="amount" value="<?php echo $amount; ?>" />
-
-		<input type="hidden" name="x_currency_code" value="<?php echo $instance->currency; ?>" />
-
-        <input type="hidden" name="loginkey" value="<?php echo $loginid; ?>" />
-        <input type="hidden" name="transactionkey" value="<?php echo $transactionkey; ?>" />
-        <input type="hidden" name="clientkey" value="<?php echo $clientkey; ?>" />
-        
-		<input type="hidden" name="x_cust_id" value="<?php echo $instance->courseid.'-'.$USER->id.'-'.$instance->id.'-'.$context->id; ?>">
-		<input type="hidden" name="x_description" value="<?php echo $description; ?>" />
-		<input type="hidden" name="x_invoice_num" value="<?php echo $invoice; ?>" />
-		<input type="hidden" name="x_fp_sequence" value="<?php echo $sequence; ?>" />
-		<input type="hidden" name="x_fp_timestamp" value="<?php echo $timestamp; ?>" />
-		<input type="hidden" name="x_email_customer" value="true" >
-
-		 <button type="button" id="pay_btns" onclick="sendPaymentDataToAnet()">Pay</button>
-	</form>
-</div>
+        <div class="loader"></div>
+        <button type="button" id="final-payment-button"><?php echo get_string('pay', 'enrol_authorizedotnet'); ?></button>
+    </div>
+  </div>
+  <p><input type="button" id="open-creditcard-popup" class="popup"/></p>
 </div>
 
-<p>
-<input type="button" id="sub_button" value="" class="popup" onclick="myFunction()"/>
+<?php
+$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($clientkey, $loginid, $amount, $instance->currency, $transactionkey, $instance->courseid, $USER->id, $USER->email, $instance->id, $context->id, $description, $invoice, $sequence, $timestamp, $auth_modess, $error_payment_text));
+?>
 
-	
-</p>
-</div>
-<style type="text/css">
-#sub_button{
+<style>
+#open-creditcard-popup{
   background: url("<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/paynow.png") no-repeat scroll 0 0 transparent;
   color: #000000;
   cursor: pointer;
@@ -183,113 +136,25 @@ $_SESSION['timestamp'] = $timestamp = time();
   from {opacity: 0;}
   to {opacity:1 ;}
 }
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
-
-<script>
-var pay_type = 0;
- $(document).ready(function(){
- 
-   $('#card_form').hide();
-   $('#account_form').hide();
-   $('#pay_btns').hide();
- });
- 
- 
-// When the user clicks on button, open the popup
-function myFunction() {
-  var popup = document.getElementById("myPopup");
-  popup.classList.toggle("show");
-}
-
-$('#card_btn').click(function(){
-    
-         $('#card_form').show();
-         $('#account_form').hide();
-         $('#pay_btns').show();
-         pay_type = 1;
-    });
-    
-$('#account_btn').click(function(){
-
-         $('#account_form').show();
-         $('#card_form').hide();
-         $('#pay_btns').show();
-         pay_type = 2;
-    });
-    
-    
-//Accept js Operation Starts Here
-
-function sendPaymentDataToAnet() {
-    var authData = {};
-        authData.clientKey = "<?php echo $clientkey; ?>";
-        authData.apiLoginID = "<?php echo $loginid; ?>";
-
-    var cardData = {};
-        cardData.cardNumber = document.getElementById("cardNumber").value;
-        cardData.month = document.getElementById("expMonth").value;
-        cardData.year = document.getElementById("expYear").value;
-        cardData.cardCode = document.getElementById("cardCode").value;
-
-    // If using banking information instead of card information,
-    // build a bankData object instead of a cardData object.
-    //
-    var bankData = {};
-        bankData.accountNumber = document.getElementById('accountNumber').value;
-        bankData.routingNumber = document.getElementById('routingNumber').value;
-        bankData.nameOnAccount = document.getElementById('nameOnAccount').value;
-        bankData.accountType = document.getElementById('accountType').value;
-        
-    var secureData = {};
-    
-    if(pay_type == 1) {
-    
-    
-        secureData.authData = authData;
-        secureData.cardData = cardData;
-    }
-    
-    if(pay_type == 2) {
-        secureData.authData = authData;
-        secureData.bankData = bankData;
-    }
-        // If using banking information instead of card information,
-        // send the bankData object instead of the cardData object.
-        //
-        // secureData.bankData = bankData;
-
-    Accept.dispatchData(secureData, responseHandler);
-
-    function responseHandler(response) {
-        if (response.messages.resultCode === "Error") {
-            var i = 0;
-            while (i < response.messages.message.length) {
-                alert(
-                    response.messages.message[i].text
-                );
-                i = i + 1;
-            }
-        } else {
-            paymentFormUpdate(response.opaqueData);
-        }
-    }
-}
-
-function paymentFormUpdate(opaqueData) {
-    document.getElementById("dataDescriptor").value = opaqueData.dataDescriptor;
-    document.getElementById("dataValue").value = opaqueData.dataValue;
-
-    // If using your own form to collect the sensitive data from the customer,
-    // blank out the fields before submitting them to your server.
-    document.getElementById("cardNumber").value = "";
-    document.getElementById("expMonth").value = "";
-    document.getElementById("expYear").value = "";
-    document.getElementById("cardCode").value = "";
-    document.getElementById("accountNumber").value = "";
-    document.getElementById("routingNumber").value = "";
-    document.getElementById("nameOnAccount").value = "";
-    document.getElementById("accountType").value = "";
-
-    document.getElementById("paymentForm").submit();
-}
-</script>
