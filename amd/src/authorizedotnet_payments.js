@@ -3,7 +3,7 @@ define(['jquery', 'core/ajax'
     function($, ajax
     ) {
     return {
-        authorizedotnet_payments: function(clientkey, loginid, amount, instance_currency, transactionkey, instance_courseid, USER_id, USER_email, instance_id, context_id, description, invoice, sequence, timestamp, auth_modess, error_payment_text) {
+        authorizedotnet_payments: function(client_key, login_id, amount, instance_currency, transaction_key, instance_courseid, user_id, user_email, instance_id, context_id, description, invoice, sequence, timestamp, auth_mode, error_payment_text) {
             var pay_type = 0;
             $(document).ready(function() {
                 $('.loader').hide();
@@ -16,18 +16,15 @@ define(['jquery', 'core/ajax'
             });
 
             $("#final-payment-button").click(function() {
-                var authData = {};
-                authData.clientKey = clientkey;
-                authData.apiLoginID = loginid;
 
-                var cardNumber = document.getElementById("cardNumber").value;
-                var month = document.getElementById("expMonth").value;
-                var year = document.getElementById("expYear").value;
-                var cardCode = document.getElementById("cardCode").value;
+                var payment_card_number = document.getElementById("card-number").value;
+                var month = document.getElementById("exp-month").value;
+                var year = document.getElementById("exp-year").value;
+                var card_code = document.getElementById("card-code").value;
 
                 var promises = ajax.call([{
                     methodname: 'moodle_authorizedotnet_payprocess',
-                    args: { clientkey: clientkey, loginid: loginid, amount: amount, instance_currency: instance_currency, transactionkey: transactionkey, instance_courseid: instance_courseid, USER_id: USER_id, USER_email: USER_email, instance_id: instance_id, context_id: context_id, description: description, invoice: invoice, sequence: sequence, timestamp: timestamp, cardNumber: cardNumber, month: month, year: year, cardCode: cardCode, auth_modess: auth_modess},
+                    args: { client_key: client_key, login_id: login_id, amount: amount, instance_currency: instance_currency, transaction_key: transaction_key, instance_courseid: instance_courseid, user_id: user_id, user_email: user_email, instance_id: instance_id, context_id: context_id, description: description, invoice: invoice, sequence: sequence, timestamp: timestamp, payment_card_number: payment_card_number, month: month, year: year, card_code: card_code, auth_mode: auth_mode},
                 }]);
                 $('.loader').show();
                 $('#final-payment-button').hide();

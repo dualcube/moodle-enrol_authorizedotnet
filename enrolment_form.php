@@ -22,10 +22,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 global $PAGE;
-$loginid = $this->get_config('loginid');
-$transactionkey = $this->get_config('transactionkey');
-$clientkey = $this->get_config('clientkey');
-$auth_modess = $this->get_config('checkproductionmode');
+$login_id = $this->get_config('loginid');
+$transaction_key = $this->get_config('transactionkey');
+$client_key = $this->get_config('clientkey');
+$auth_mode = $this->get_config('checkproductionmode');
 $amount = $cost;
 $description = $coursefullname;
 $invoice = date('YmdHis');
@@ -50,10 +50,10 @@ $error_payment_text = get_string('error_payment', 'enrol_authorizedotnet');
         <h3><?php echo get_string('make_payment', 'enrol_authorizedotnet'); ?></h3>
         <div id="payment_error"></div>
         <div id="card_form">
-            <input type="text" name="cardNumber" id="cardNumber" placeholder="<?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?>"/> <br><br>
-            <input type="text" name="expMonth" id="expMonth" placeholder="<?php echo get_string('expmonth', 'enrol_authorizedotnet'); ?>"/> <br><br>
-            <input type="text" name="expYear" id="expYear" placeholder="<?php echo get_string('expyear', 'enrol_authorizedotnet'); ?>"/> <br><br>
-            <input type="text" name="cardCode" id="cardCode" placeholder="<?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?>"/> 
+            <input type="text" name="cardNumber" id="card-number" placeholder="<?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?>"/> <br><br>
+            <input type="text" name="expMonth" id="exp-month" placeholder="<?php echo get_string('expmonth', 'enrol_authorizedotnet'); ?>"/> <br><br>
+            <input type="text" name="expYear" id="exp-year" placeholder="<?php echo get_string('expyear', 'enrol_authorizedotnet'); ?>"/> <br><br>
+            <input type="text" name="cardCode" id="card-code" placeholder="<?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?>"/> 
         </div>
         <div class="loader"></div>
         <button type="button" id="final-payment-button"><?php echo get_string('pay', 'enrol_authorizedotnet'); ?></button>
@@ -63,7 +63,7 @@ $error_payment_text = get_string('error_payment', 'enrol_authorizedotnet');
 </div>
 
 <?php
-$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($clientkey, $loginid, $amount, $instance->currency, $transactionkey, $instance->courseid, $USER->id, $USER->email, $instance->id, $context->id, $description, $invoice, $sequence, $timestamp, $auth_modess, $error_payment_text));
+$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($client_key, $login_id, $amount, $instance->currency, $transaction_key, $instance->courseid, $USER->id, $USER->email, $instance->id, $context->id, $description, $invoice, $sequence, $timestamp, $auth_mode, $error_payment_text));
 ?>
 
 <style>

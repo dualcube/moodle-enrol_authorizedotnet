@@ -13,25 +13,25 @@ class moodle_enrol_authorizedotnet_external extends external_api {
     public static function authorizedotnet_payment_processing_parameters() {
         return new external_function_parameters(
             array(
-                'clientkey' => new external_value(PARAM_RAW, 'The item id to operate on'),
-                'loginid' => new external_value(PARAM_RAW, 'The item id to operate on'),
+                'client_key' => new external_value(PARAM_RAW, 'The item id to operate on'),
+                'login_id' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'amount' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'instance_currency' => new external_value(PARAM_RAW, 'The item id to operate on'),
-                'transactionkey' => new external_value(PARAM_RAW, 'The item id to operate on'),
+                'transaction_key' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'instance_courseid' => new external_value(PARAM_RAW, 'The item id to operate on'),
-                'USER_id' => new external_value(PARAM_RAW, 'The item id to operate on'),
-                'USER_email' => new external_value(PARAM_RAW, 'The item id to operate on'),
+                'user_id' => new external_value(PARAM_RAW, 'The item id to operate on'),
+                'user_email' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'instance_id' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'context_id' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'description' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'invoice' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'sequence' => new external_value(PARAM_RAW, 'The item id to operate on'),
                 'timestamp' => new external_value(PARAM_RAW, 'The item id to operate on'),
-                'cardNumber' => new external_value(PARAM_TEXT, 'The item id to operate on'),
+                'payment_card_number' => new external_value(PARAM_TEXT, 'The item id to operate on'),
                 'month' => new external_value(PARAM_TEXT, 'The item id to operate on'),
                 'year' => new external_value(PARAM_TEXT, 'The item id to operate on'),
-                'cardCode' => new external_value(PARAM_TEXT, 'The item id to operate on'),
-                'auth_modess' => new external_value(PARAM_TEXT, 'The item id to operate on')
+                'card_code' => new external_value(PARAM_TEXT, 'The item id to operate on'),
+                'auth_mode' => new external_value(PARAM_TEXT, 'The item id to operate on')
             )  
         );
     }
@@ -44,7 +44,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
         );
     }
 
-    public static function authorizedotnet_payment_processing($clientkey, $loginid, $amount, $instance_currency, $transactionkey, $instance_courseid, $USER_id, $user_email, $instance_id, $context_id, $description, $invoice, $sequence, $timestamp, $cardNumber, $month, $year, $cardCode, $auth_modess) {
+    public static function authorizedotnet_payment_processing($client_key, $login_id, $amount, $instance_currency, $transaction_key, $instance_courseid, $user_id, $user_email, $instance_id, $context_id, $description, $invoice, $sequence, $timestamp, $payment_card_number, $month, $year, $card_code, $auth_mode) {
         global $DB, $CFG, $PAGE;
 
         require("../../config.php");
@@ -54,7 +54,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
         require_once($CFG->libdir . '/filelib.php');
         require_once("$CFG->dirroot/enrol/authorizedotnet/lib.php");
 
-        if (! $user = $DB->get_record("user", array("id" => $USER_id))) {
+        if (! $user = $DB->get_record("user", array("id" => $user_id))) {
             print_error("Not a valid user id"); die;
         }
 
@@ -66,66 +66,66 @@ class moodle_enrol_authorizedotnet_external extends external_api {
             print_error("Not a valid context id"); die;
         }
 
-        if (! $plugininstance = $DB->get_record("enrol", array("id" => $instance_id, "status" => 0))) {
+        if (! $plugin_instance = $DB->get_record("enrol", array("id" => $instance_id, "status" => 0))) {
             print_error("Not a valid instance id"); die;
         }
 
-        $paymentID = $statusMsg = '';
-        $ordStatus = 'error';
+        $payment_id = $status_msg = '';
+        $order_status = 'error';
 
-        $ANET_ENV = $auth_modess && $auth_modess == 1 ? 'PRODUCTION': 'SANDBOX'; // or PRODUCTION 
+        $paymnet_env = $auth_mode && $auth_mode == 1 ? 'PRODUCTION': 'SANDBOX'; // or PRODUCTION 
         // Check whether card information is not empty 
-        if(!empty($cardNumber) && !empty($month) && !empty($year) && !empty($cardCode)){ 
+        if(!empty($payment_card_number) && !empty($month) && !empty($year) && !empty($card_code)){ 
 
             // Retrieve card and user info from the submitted form data 
             $email = $user_email;
-            $card_number = preg_replace('/\s+/', '', $cardNumber); 
+            $card_number = preg_replace('/\s+/', '', $payment_card_number); 
             $card_exp_month = $month; 
             $card_exp_year = $year; 
             $card_exp_year_month = $card_exp_year.'-'.$card_exp_month; 
-            $card_cvc = $cardCode; 
+            $card_cvc = $card_code; 
 
             // Set the transaction's reference ID 
-            $refID = 'REF'.time(); 
+            $ref_id = 'REF'.time(); 
 
             // Create a merchantAuthenticationType object with authentication details 
             // retrieved from the config file 
-            $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();    
-            $merchantAuthentication->setName($loginid);    
-            $merchantAuthentication->setTransactionKey($transactionkey);    
+            $merchant_authentication = new AnetAPI\MerchantAuthenticationType();    
+            $merchant_authentication->setName($login_id);    
+            $merchant_authentication->setTransactionKey($transaction_key);    
 
             // Create the payment data for a credit card 
-            $creditCard = new AnetAPI\CreditCardType(); 
-            $creditCard->setCardNumber($card_number); 
-            $creditCard->setExpirationDate($card_exp_year_month); 
-            $creditCard->setCardCode($card_cvc); 
+            $credit_card_set = new AnetAPI\CreditCardType(); 
+            $credit_card_set->setCardNumber($card_number); 
+            $credit_card_set->setExpirationDate($card_exp_year_month); 
+            $credit_card_set->setCardCode($card_cvc); 
 
             // Add the payment data to a paymentType object 
-            $paymentOne = new AnetAPI\PaymentType(); 
-            $paymentOne->setCreditCard($creditCard); 
+            $payment_one = new AnetAPI\PaymentType(); 
+            $payment_one->setCreditCard($credit_card_set); 
 
             // Create order information 
             $order = new AnetAPI\OrderType(); 
             $order->setDescription($description); 
 
             // Set the customer's identifying information 
-            $customerData = new AnetAPI\CustomerDataType(); 
-            $customerData->setType("individual"); 
-            $customerData->setEmail($email); 
+            $customer_data = new AnetAPI\CustomerDataType(); 
+            $customer_data->setType("individual"); 
+            $customer_data->setEmail($email); 
 
             // Create a transaction 
-            $transactionRequestType = new AnetAPI\TransactionRequestType(); 
-            $transactionRequestType->setTransactionType("authCaptureTransaction");    
-            $transactionRequestType->setAmount($amount); 
-            $transactionRequestType->setOrder($order); 
-            $transactionRequestType->setPayment($paymentOne); 
-            $transactionRequestType->setCustomer($customerData); 
+            $transaction_request_type = new AnetAPI\TransactionRequestType(); 
+            $transaction_request_type->setTransactionType("authCaptureTransaction");    
+            $transaction_request_type->setAmount($amount); 
+            $transaction_request_type->setOrder($order); 
+            $transaction_request_type->setPayment($payment_one); 
+            $transaction_request_type->setCustomer($customer_data); 
             $request = new AnetAPI\CreateTransactionRequest(); 
-            $request->setMerchantAuthentication($merchantAuthentication); 
-            $request->setRefId($refID); 
-            $request->setTransactionRequest($transactionRequestType); 
+            $request->setMerchantAuthentication($merchant_authentication); 
+            $request->setRefId($ref_id); 
+            $request->setTransactionRequest($transaction_request_type); 
             $controller = new AnetController\CreateTransactionController($request); 
-            $response = $controller->executeWithApiResponse(constant("\\net\authorize\api\constants\ANetEnvironment::$ANET_ENV")); 
+            $response = $controller->executeWithApiResponse(constant("\\net\authorize\api\constants\ANetEnvironment::$paymnet_env")); 
 
             if ($response != null) { 
                 // Check to see if the API request was successfully received and acted upon 
@@ -157,7 +157,6 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         }
 
                         $plugin = enrol_get_plugin('authorizedotnet');
-
                         $mailstudents = $plugin->get_config('mailstudents');
                         $mailteachers = $plugin->get_config('mailteachers');
                         $mailadmins   = $plugin->get_config('mailadmins');
@@ -237,7 +236,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         $enrolauthorizedotnet = $userenrolments = $roleassignments = new stdClass();
                         $enrolauthorizedotnet->item_name = $description;
                         $enrolauthorizedotnet->courseid = $instance_courseid;
-                        $enrolauthorizedotnet->userid = $USER_id;
+                        $enrolauthorizedotnet->userid = $user_id;
                         $enrolauthorizedotnet->instanceid = $instance_id;
                         $enrolauthorizedotnet->amount = $amount;
                         $enrolauthorizedotnet->payment_status = 'Approved';
@@ -248,16 +247,16 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         /* Inserting value to enrol_authorizedotnet table */
                         $ret1 = $DB->insert_record("enrol_authorizedotnet", $enrolauthorizedotnet, false);
 
-                        if ($plugininstance->enrolperiod) {
+                        if ($plugin_instance->enrolperiod) {
                             $timestart = time();
-                            $timeend   = $timestart + $plugininstance->enrolperiod;
+                            $timeend   = $timestart + $plugin_instance->enrolperiod;
                         } else {
                             $timestart = 0;
                             $timeend   = 0;
                         }
 
                         /* Enrol User */
-                        $plugin->enrol_user($plugininstance, $user->id, $plugininstance->roleid, $timestart, $timeend);
+                        $plugin->enrol_user($plugin_instance, $user->id, $plugin_instance->roleid, $timestart, $timeend);
 
                         if (!$course) {
                             redirect($CFG->wwwroot);
@@ -273,15 +272,15 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                             $PAGE->set_url($destination);
                         }
 
-                        $ordStatus = 'success'; 
-                        $statusMsg = 'Your Payment has been Successful!'; 
+                        $order_status = 'success'; 
+                        $status_msg = 'Your Payment has been Successful!'; 
                     } else { 
                         $error = "Transaction Failed! \n"; 
                         if ($tresponse->getErrors() != null) { 
                             $error .= " Error Code  : " . $tresponse->getErrors()[0]->getErrorCode() . "<br/>"; 
                             $error .= " Error Message : " . $tresponse->getErrors()[0]->getErrorText() . "<br/>"; 
                         } 
-                        $statusMsg = $error; 
+                        $status_msg = $error; 
                     } 
                 // Or, print errors if the API request wasn't successful 
                 } else { 
@@ -295,17 +294,17 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         $error .= " Error Code  : " . $response->getMessages()->getMessage()[0]->getCode() . "<br/>"; 
                         $error .= " Error Message : " . $response->getMessages()->getMessage()[0]->getText() . "<br/>"; 
                     } 
-                    $statusMsg = $error; 
+                    $status_msg = $error; 
                 } 
             } else { 
-                $statusMsg =  "Transaction Failed! No response returned"; 
+                $status_msg =  "Transaction Failed! No response returned"; 
             } 
         } else { 
-            $statusMsg = "Error on form submission."; 
+            $status_msg = "Error on form submission."; 
         }
 
         $result = array();
-        $result['status'] = $ordStatus;
+        $result['status'] = $order_status;
         return $result;
         die;
     }
