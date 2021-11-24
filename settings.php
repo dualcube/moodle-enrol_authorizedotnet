@@ -23,8 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-global $CFG;
-require_once($CFG->dirroot.'/enrol/authorizedotnet/lib.php');
+
 if ($ADMIN->fulltree) {
 
     // Settings.
