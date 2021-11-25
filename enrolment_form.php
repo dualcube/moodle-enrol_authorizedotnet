@@ -18,7 +18,7 @@
  * Authorize.net enrolment plugin - enrolment form.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @copyright  2021 DualCube
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 global $PAGE;
