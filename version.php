@@ -18,15 +18,15 @@
  * Authorize.net enrolment plugin version specification.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @copyright  2021 DualCube
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2021112415;
-$plugin->requires  = 2013051401;
+$plugin->requires  = 2015111600;
 $plugin->component = 'enrol_authorizedotnet';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.5.1 (Build: 20150610)';
+$plugin->release   = '2.5.1 (Build: 2021112415)';
 $plugin->cron      = 60;
