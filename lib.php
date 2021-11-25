@@ -18,14 +18,14 @@
  * Authorize.net enrolment plugin.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @copyright  2021 Dualcube
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 /**
  * Sets up essential methods for plugin.
- * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @copyright  2021 Dualcube
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_authorizedotnet_plugin extends enrol_plugin {
