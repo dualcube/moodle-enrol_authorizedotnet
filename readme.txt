@@ -1,6 +1,6 @@
 Enrolment in Moodle using Authorize.net payment gateway for paid courses
 
-This plugin helps admins and webmasters use Authorize.net as the payment gateway. PAuthorze.net is one of the most commonly used payment gateways and offers considerable number of features unsupported by other payment gateways like Paypal. This plugin has all the settings for development as well as for production usage. Its easy to install, set up and effective.
+This plugin helps admins and webmasters use Authorize.net as the payment gateway. Authorze.net is one of the most commonly used payment gateways and offers considerable number of features unsupported by other payment gateways like Paypal. This plugin has all the settings for development as well as for production usage. Its easy to install, set up and effective.
 
 Installation Guidence : 
 

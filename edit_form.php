@@ -18,7 +18,7 @@
  * Adds new instance of enrol_authorizedotnet to specified course or edits current instance.
  * 
  * @package    enrol_authorizedotnet
- * @copyright  2021 Dualcube
+ * @copyright  2021 DualCube
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
