@@ -25,11 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-/**
- * Sets up moodle edit form class methods.
- * @copyright  2021 Dualcube
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class enrol_authorizedotnet_edit_form extends moodleform {
     /**
      * Sets up moodle form.
