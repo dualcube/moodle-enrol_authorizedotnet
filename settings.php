@@ -18,7 +18,7 @@
  * Authorize.net enrolments plugin settings and presets.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @copyright  2021 Dualcube
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,20 +30,12 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('enrol_authorizedotnet_settings', '',
                    get_string('pluginname_desc', 'enrol_authorizedotnet')));
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/loginid',
-                   get_string('loginid', 'enrol_authorizedotnet'),
-                   'Copy API Login ID from merchant account & paste here', '', PARAM_RAW));
+                   get_string('loginid', 'enrol_authorizedotnet'), get_string('loginid_description', 'enrol_authorizedotnet'), '', PARAM_RAW));
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/transactionkey',
-                   get_string('transactionkey', 'enrol_authorizedotnet'),
-                   'Copy API Transaction Key from merchant account & paste here', '', PARAM_RAW));
-    /*
-    $settings->add(new admin_setting_configtext('enrol_authorizedotnet/merchantmd5hash',
-                   get_string('merchantmd5hash', 'enrol_authorizedotnet'),
-                   'Copy secret MD5 Hash from merchant account & paste here', '', PARAM_RAW));
-                   */
-    
+                   get_string('transactionkey', 'enrol_authorizedotnet'), get_string('transactionkey_description', 'enrol_authorizedotnet'), '', PARAM_RAW));
+  
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/clientkey',
-                   get_string('clientkey', 'enrol_authorizedotnet'),
-                   'Generate clientkey from merchant account & paste here', '', PARAM_RAW));
+                   get_string('clientkey', 'enrol_authorizedotnet'), get_string('clientkey_descrition', 'enrol_authorizedotnet'), '', PARAM_RAW));
     
     
     $settings->add(new admin_setting_configcheckbox('enrol_authorizedotnet/checkproductionmode',

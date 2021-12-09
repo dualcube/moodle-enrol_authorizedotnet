@@ -18,17 +18,17 @@
  * Strings for component 'enrol_authorizedotnet', language 'en'.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2015 Dualcube, Moumita Ray, Parthajeet Chakraborty
+ * @copyright  2021 Dualcube
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Authorize.net';
 $string['pluginname_desc'] = 'The Authorize.net module allows you to set up paid courses.  If the cost for any course is zero, then students are not asked to pay for entry.  There is a site-wide cost that you set here as a default for the whole site and then a course setting that you can set for each course individually. The course cost overrides the site cost.';
-$string['loginid'] = 'Authorize.net login ID';
-$string['transactionkey'] = 'Authorize.net transaction key';
-$string['merchantmd5hash'] = 'Authorize.net merchant MD5 hash key';
+$string['loginid'] = 'Authorize.net Login ID';
+$string['transactionkey'] = 'Authorize.net Transaction Key';
+$string['merchantmd5hash'] = 'Authorize.net Merchant MD5 hash key';
 $string['clientkey'] = 'Authorize.net merchant Client key';
-$string['checkproductionmode'] = 'Check for production mode';
+$string['checkproductionmode'] = 'Check for Live Mode';
 $string['mailadmins'] = 'Notify admin';
 $string['mailstudents'] = 'Notify students';
 $string['mailteachers'] = 'Notify teachers';
@@ -58,3 +58,22 @@ $string['authorizedotnet:unenrolself'] = 'Unenrol self from the course';
 $string['status'] = 'Allow Authorize.net enrolments';
 $string['status_desc'] = 'Allow users to use Authorize.net to enrol into a course by default.';
 $string['unenrolselfconfirm'] = 'Do you really want to unenrol yourself from course "{$a}"?';
+$string['token_empty_error'] = 'Web service token could not be empty';
+$string['webservice_token_string'] = 'User Token';
+$string['create_user_token'] = 'To make Stripe callback works, kindly  enable Moodle REST protocol on your site';
+$string['enabled_rest_protocol'] = 'Also kindly create your token';
+$string['from_here'] = 'from here';
+$string['requires_payment'] = 'This course requires a payment for entry.';
+$string['make_payment'] = 'Make Your Payment';
+$string['card_payment'] = 'Card Payment';
+$string['account_payment'] = 'Account Payment';
+$string['pay'] = 'Pay';
+$string['error_payment'] = 'There are some issue';
+$string['cardnumber'] = 'Card Number';
+$string['expmonth'] = 'Expiry Month';
+$string['expyear'] = 'Expiry Year';
+$string['cardcode'] = 'Card Code';
+
+$string['clientkey_descrition'] = 'Generate client key from merchant account & paste here';
+$string['transactionkey_description'] = 'Copy API Transaction Key from merchant account & paste here';
+$string['loginid_description'] = 'Copy API Login ID from merchant account & paste here';
