@@ -23,11 +23,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-/**
- * Sets up essential methods for plugin.
- * @copyright  2021 Dualcube
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class enrol_authorizedotnet_plugin extends enrol_plugin {
     /**
      * Lists all currencies available for plugin.
