@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
 /**
  * Authorize.net enrolment plugin - enrolment form.
  *
@@ -36,35 +37,53 @@ $error_payment_text = get_string('error_payment', 'enrol_authorizedotnet');
 <!-- Load the jQuery library from the Google CDN -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js">
 </script>
-
-<div align="center">
+<div class="payment-wrap">
+<div class="payment-left">
   <p><?php echo get_string('requires_payment', 'enrol_authorizedotnet'); ?></p>
   <p><b><?php echo $instancename; ?></b></p>
   <p><b><?php echo get_string("cost").": {$instance->currency} {$localisedcost}"; ?></b></p>
 
+
   <p>&nbsp;</p>
   <p><img alt="Authorize.net" src="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/authorize-net-logo.jpg" /></p>
   <p>&nbsp;</p>
-  <div class="popup">
+
+
+  <p><input type="button" id="open-creditcard-popup" class="popup"/></p>
+</div>
+<div class="popup payment-right">
     <div class="popuptext" id="net-pay-popup">
         <h3><?php echo get_string('make_payment', 'enrol_authorizedotnet'); ?></h3>
         <div id="payment_error"></div>
         <div id="card_form">
-            <input type="text" name="cardNumber" id="card-number" placeholder="<?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?>"/> <br><br>
-            <input type="text" name="expMonth" id="exp-month" placeholder="<?php echo get_string('expmonth', 'enrol_authorizedotnet'); ?>"/> <br><br>
-            <input type="text" name="expYear" id="exp-year" placeholder="<?php echo get_string('expyear', 'enrol_authorizedotnet'); ?>"/> <br><br>
-            <input type="text" name="cardCode" id="card-code" placeholder="<?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?>"/> 
+          <div class="form-group-authorized-net">
+            <label for="card-number">Card Number</label>
+            <input type="text" name="cardNumber" id="card-number" placeholder="<?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?>"/>
+            </div>
+             <div class="form-group-authorized-net">
+            <label for="">Exp Date</label>
+            <div class="authorized-net-input-wrap">
+            <input type="text" name="expMonth" id="exp-month" placeholder="<?php echo get_string('expmonth', 'enrol_authorizedotnet'); ?>"/>
+            <input type="text" name="expYear" id="exp-year" placeholder="<?php echo get_string('expyear', 'enrol_authorizedotnet'); ?>"/>
+            </div>
+            </div>
+           
+             <div class="form-group-authorized-net">
+            <label for="card-coder">Card Code</label>
+            <input type="text" name="cardCode" id="card-code" placeholder="<?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?>"/>
+            </div>
         </div>
         <div class="loader"></div>
         <button type="button" id="final-payment-button"><?php echo get_string('pay', 'enrol_authorizedotnet'); ?></button>
     </div>
   </div>
-  <p><input type="button" id="open-creditcard-popup" class="popup"/></p>
-</div>
+  </div>
+
 
 <?php
 $PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($client_key, $login_id, $amount, $instance->currency, $transaction_key, $instance->courseid, $USER->id, $USER->email, $instance->id, $context->id, $description, $invoice, $sequence, $timestamp, $auth_mode, $error_payment_text));
 ?>
+
 
 <style>
 #open-creditcard-popup{
@@ -77,65 +96,66 @@ $PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', '
   width: 300px;
   height: 110px;
 }
-
+.payment-wrap {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.form-group-authorized-net {
+    text-align: left;
+    margin:1rem 0;
+}
+.form-group-authorized-net label {
+    font-weight: 600;
+    color: #050606;
+}
+.authorized-net-input-wrap {
+    display: flex;
+    gap: 0.5rem;
+}
 /* Popup container - can be anything you want */
 .popup {
-  position: relative;
-  display: inline-block;
+  display:block;
   cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
 }
-
+.payment-left {
+    text-align: center;
+    background: #0075ff;
+    padding: 1rem;
+    color: #fff;
+    border-radius: 0.25rem;
+    transition:0.2s all ease-in-out;
+}
+.payment-left:hover{
+  box-shadow:2px 3px 20px 0 #00000036;
+}
 /* The actual popup */
 .popup .popuptext {
-  visibility: hidden;
-  width: 330px;
-    background-color: #bbb;
-    color: #333;
+    visibility: hidden;
+    width: 330px;
+    background-color: #ffc300;
+    color: #181718;
     text-align: center;
     border-radius: 6px;
-    padding: 8px 0;
-    position: absolute;
-    float: 1;
-    float: right;
-    bottom: 125%;
-    left: 50%;
-    height: fit-content;
-    margin-left: -165px;
+    padding: 1rem 1rem 0.5rem;
+    height: 100%;
+    display: grid;
+    place-item:center;
+    transition:0.2s all ease-in-out;
 }
-
-/* Popup arrow */
-.popup .popuptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
+.popup .popuptext:hover{
+  box-shadow:2px 3px 20px 0 #00000036;
 }
-
 /* Toggle this class - hide and show the popup */
 .popup .show {
   visibility: visible;
-  -webkit-animation: fadeIn 1s;
-  animation: fadeIn 1s;
 }
 
-/* Add animation (fade in the popup) */
-@-webkit-keyframes fadeIn {
-  from {opacity: 0;} 
-  to {opacity: 1;}
-}
-
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity:1 ;}
-}
 
 .loader {
   border: 16px solid #f3f3f3;
@@ -146,6 +166,24 @@ $PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', '
   -webkit-animation: spin 2s linear infinite; /* Safari */
   animation: spin 2s linear infinite;
 }
+/* button style */
+button#final-payment-button {
+    border: 0;
+    padding: 0rem 1.5rem;
+    margin: 0.5rem auto;
+    border-radius: 0.25rem;
+    background: #0075ff;
+    color: #fff;
+}
+/* payment input style */
+.popup .show div#card_form input {
+    width: 100%;
+    border: 0;
+    min-height: 2rem;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
 
 /* Safari */
 @-webkit-keyframes spin {
@@ -153,8 +191,12 @@ $PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', '
   100% { -webkit-transform: rotate(360deg); }
 }
 
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 </style>
+
+
+

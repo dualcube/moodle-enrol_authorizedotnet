@@ -111,7 +111,18 @@ class moodle_enrol_authorizedotnet_external extends external_api {
             // Set the customer's identifying information 
             $customer_data = new AnetAPI\CustomerDataType(); 
             $customer_data->setType("individual"); 
-            $customer_data->setEmail($email); 
+            $customer_data->setId($user->id);
+            $customer_data->setEmail($email);
+
+
+            // Set the customer's Bill To address
+            $customerAddress = new AnetAPI\CustomerAddressType();
+            $customerAddress->setFirstName($user->firstname);
+            $customerAddress->setLastName($user->lastname);
+            $customerAddress->setCompany($user->department);
+            $customerAddress->setAddress($user->address);
+            $customerAddress->setCity($user->city);
+            $customerAddress->setCountry($user->country); 
 
             // Create a transaction 
             $transaction_request_type = new AnetAPI\TransactionRequestType(); 
@@ -119,11 +130,16 @@ class moodle_enrol_authorizedotnet_external extends external_api {
             $transaction_request_type->setAmount($amount); 
             $transaction_request_type->setOrder($order); 
             $transaction_request_type->setPayment($payment_one); 
+            $transaction_request_type->setBillTo($customerAddress); 
             $transaction_request_type->setCustomer($customer_data); 
+
+            // Assemble the complete transaction request
             $request = new AnetAPI\CreateTransactionRequest(); 
             $request->setMerchantAuthentication($merchant_authentication); 
             $request->setRefId($ref_id); 
             $request->setTransactionRequest($transaction_request_type); 
+
+            // Create the controller and get the response
             $controller = new AnetController\CreateTransactionController($request); 
             $response = $controller->executeWithApiResponse(constant("\\net\authorize\api\constants\ANetEnvironment::$paymnet_env")); 
 
@@ -242,6 +258,12 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         $enrolauthorizedotnet->payment_status = 'Approved';
                         $enrolauthorizedotnet->card_type = 'card';
                         $enrolauthorizedotnet->invoice_num = $invoice;
+                        $enrolauthorizedotnet->email = $email;
+                        $enrolauthorizedotnet->first_name = $user->firstname;
+                        $enrolauthorizedotnet->last_name = $user->lastname;
+                        $enrolauthorizedotnet->trans_id = $transaction_id;
+                        $enrolauthorizedotnet->response_code = $payment_response;
+
                         $enrolauthorizedotnet->timeupdated = time();
 
                         /* Inserting value to enrol_authorizedotnet table */
