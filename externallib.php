@@ -31,6 +31,10 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                 'month' => new external_value(PARAM_TEXT, 'The item id to operate on'),
                 'year' => new external_value(PARAM_TEXT, 'The item id to operate on'),
                 'card_code' => new external_value(PARAM_TEXT, 'The item id to operate on'),
+                'firstname' => new external_value(PARAM_TEXT, 'The item id to operate on'),
+                'lastname' => new external_value(PARAM_TEXT, 'The item id to operate on'),
+                'address' => new external_value(PARAM_TEXT, 'The item id to operate on'),
+                'zip' => new external_value(PARAM_TEXT, 'The item id to operate on'),
                 'auth_mode' => new external_value(PARAM_TEXT, 'The item id to operate on')
             )  
         );
@@ -44,7 +48,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
         );
     }
 
-    public static function authorizedotnet_payment_processing($client_key, $login_id, $amount, $instance_currency, $transaction_key, $instance_courseid, $user_id, $user_email, $instance_id, $context_id, $description, $invoice, $sequence, $timestamp, $payment_card_number, $month, $year, $card_code, $auth_mode) {
+    public static function authorizedotnet_payment_processing($client_key, $login_id, $amount, $instance_currency, $transaction_key, $instance_courseid, $user_id, $user_email, $instance_id, $context_id, $description, $invoice, $sequence, $timestamp, $payment_card_number, $month, $year, $card_code,$firstname, $lastname, $address, $zip, $auth_mode) {
         global $DB, $CFG, $PAGE;
 
         require("../../config.php");
@@ -117,12 +121,14 @@ class moodle_enrol_authorizedotnet_external extends external_api {
 
             // Set the customer's Bill To address
             $customerAddress = new AnetAPI\CustomerAddressType();
-            $customerAddress->setFirstName($user->firstname);
-            $customerAddress->setLastName($user->lastname);
+            $customerAddress->setFirstName($firstname);
+            $customerAddress->setLastName($lastname);
             $customerAddress->setCompany($user->department);
-            $customerAddress->setAddress($user->address);
+            $customerAddress->setAddress($address);
             $customerAddress->setCity($user->city);
+            $customerAddress->setZip($zip);
             $customerAddress->setCountry($user->country); 
+
 
             // Create a transaction 
             $transaction_request_type = new AnetAPI\TransactionRequestType(); 
@@ -259,8 +265,11 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         $enrolauthorizedotnet->card_type = 'card';
                         $enrolauthorizedotnet->invoice_num = $invoice;
                         $enrolauthorizedotnet->email = $email;
-                        $enrolauthorizedotnet->first_name = $user->firstname;
-                        $enrolauthorizedotnet->last_name = $user->lastname;
+                        $enrolauthorizedotnet->first_name = $firstname;
+                        $enrolauthorizedotnet->last_name = $lastname;
+                        $enrolauthorizedotnet->country = $user->country;
+                        $enrolauthorizedotnet->address = $address;
+                        $enrolauthorizedotnet->zip = $zip;
                         $enrolauthorizedotnet->trans_id = $transaction_id;
                         $enrolauthorizedotnet->response_code = $payment_response;
 
