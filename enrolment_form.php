@@ -45,7 +45,7 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
   <div class="order-info">
     <b class='heading-athorzed'><?php echo get_string('orderinfo', 'enrol_authorizedotnet'); ?></b>
     <div class="form-group-authorized-net">
-      <label for="card-number"><b>Cost :</b></label>
+      <label for="cost"><b>Cost :</b></label>
       <div class="authorized-net-input-wrap">
     <p><b><?php echo " {$instance->currency} {$localisedcost}"; ?></b></p>
       </div>
@@ -55,10 +55,10 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
     <b class='heading-athorzed'><?php echo get_string('paymentinfo', 'enrol_authorizedotnet'); ?></b>
       <!-- card number -->
     <div class="form-group-authorized-net">
-      <label for="card-number"><?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?></label>
+      <label for="cardnumber"><?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?></label>
       <span class="requiredstar">*</span> 
       <div class="authorized-net-input-wrap">
-      <input type="number" name="cardNumber" id="card-number" placeholder="<?php echo get_string('cardnumberex', 'enrol_authorizedotnet'); ?>"/><div><?php echo get_string('cardnumberreq', 'enrol_authorizedotnet'); ?></div>
+      <input type="number" name="cardnumber" id="card-number" placeholder="<?php echo get_string('cardnumberplaceholder', 'enrol_authorizedotnet'); ?>"/><div><?php echo get_string('cardnumberreq', 'enrol_authorizedotnet'); ?></div>
       </div>
     </div>
     <!-- exp date -->
@@ -66,16 +66,16 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
       <label for=""><?php echo get_string('expdate', 'enrol_authorizedotnet'); ?></label>
       <span class="requiredstar">*</span> 
       <div class="authorized-net-input-wrap exp-date">
-        <input type="number" name="expMonth" id="exp-month" maxlength="2" placeholder="<?php echo get_string('expmonthex', 'enrol_authorizedotnet'); ?>"/>
-        <input type="number" name="expYear" id="exp-year" maxlength="4" placeholder="<?php echo get_string('expyearex', 'enrol_authorizedotnet'); ?>"/><div>(mm yyyy)</div>
+        <input type="number" name="expMonth" id="exp-month" maxlength="2" placeholder="<?php echo get_string('expmonthplaceholder', 'enrol_authorizedotnet'); ?>"/>
+        <input type="number" name="expYear" id="exp-year" maxlength="4" placeholder="<?php echo get_string('expyearplaceholder', 'enrol_authorizedotnet'); ?>"/><div>(mm yyyy)</div>
       </div>
     </div>
     <!-- card code -->
     <div class="form-group-authorized-net">
-      <label for="card-coder"><?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?></label>
+      <label for="cardcoder"><?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?></label>
       <span class="requiredstar">*</span>
       <div class="authorized-net-input-wrap">
-      <input type="number" name="cardCode" id="card-code" maxlength="4" placeholder="<?php echo get_string('cardcodeex', 'enrol_authorizedotnet'); ?>"/>
+      <input type="number" name="cardCode" id="card-code" maxlength="4" placeholder="<?php echo get_string('cardcodeplaceholder', 'enrol_authorizedotnet'); ?>"/>
     <div> <a href="https://www.cvvnumber.com/"><?php echo get_string('whatscvv', 'enrol_authorizedotnet'); ?></a></div>
   </div>
     </div>
@@ -86,25 +86,25 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
     <div class="form-group-authorized-net">
       <span class="requiredstar">*</span>
       <label for="First Name"><?php echo get_string('firstname', 'enrol_authorizedotnet'); ?></label>
-      <input type="text" name="First Name" id="firstname" placeholder="<?php echo get_string('firstname', 'enrol_authorizedotnet'); ?>">
+      <input type="text" name="Firstname" id="firstname" placeholder="<?php echo get_string('firstname', 'enrol_authorizedotnet'); ?>">
     </div>
     <!-- last name -->
     <div class="form-group-authorized-net">
       <span class="requiredstar">*</span>
       <label for="Last Name"><?php echo get_string('lastname', 'enrol_authorizedotnet'); ?></label>
-      <input type="text" name="Last Name" id="lastname" placeholder="<?php echo get_string('lastname', 'enrol_authorizedotnet'); ?>">
+      <input type="text" name="Lastname" id="lastname" placeholder="<?php echo get_string('lastname', 'enrol_authorizedotnet'); ?>">
     </div>
     <!-- Address -->
     <div class="form-group-authorized-net">
       <span class="requiredstar">*</span>
       <label for="Address"><?php echo get_string('address', 'enrol_authorizedotnet'); ?></label>
-      <input type="text" name="Address" id="address" placeholder="<?php echo get_string('addressex', 'enrol_authorizedotnet'); ?>">
+      <input type="text" name="Address" id="address" placeholder="<?php echo get_string('addressplaceholder', 'enrol_authorizedotnet'); ?>">
     </div>
     <!-- zip -->
     <div class="form-group-authorized-net">
       <span class="requiredstar">*</span>
       <label for="ZIP Code"><?php echo get_string('ZIP', 'enrol_authorizedotnet'); ?></label>
-      <input type="number" name="ZIP Code" id="zip" placeholder="<?php echo get_string('ZIPex', 'enrol_authorizedotnet'); ?>">
+      <input type="number" name="ZIPCode" id="zip" placeholder="<?php echo get_string('ZIPplaceholder', 'enrol_authorizedotnet'); ?>">
     </div>
   </div>
   <div class="auth-submit">
