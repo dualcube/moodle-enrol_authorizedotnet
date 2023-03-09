@@ -39,8 +39,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
     public static function authorizedotnet_payment_processing_returns() {
         return new external_single_structure(
             array(
-                'status' => new external_value(PARAM_RAW, 'status: true if success'),
-                'error' => new external_value(PARAM_RAW, 'error: error message')
+                'status' => new external_value(PARAM_RAW, 'status: true if success')
             )
         );
     }
@@ -288,8 +287,12 @@ class moodle_enrol_authorizedotnet_external extends external_api {
             $status_msg = "Error on form submission."; 
         }
         $result = array();
-        $result['status'] = $order_status;
-        $result['error'] = $error_msg;
+        if($order_status == 'error'){
+            $result['status'] = $error_msg;
+        }
+        else{
+            $result['status'] = $order_status;
+        }
         return $result;
         die;
     }

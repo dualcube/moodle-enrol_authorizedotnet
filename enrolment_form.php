@@ -13,10 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
-
 /**
  * Authorize.net enrolment plugin - enrolment form.
  *
@@ -39,15 +35,15 @@ $error_payment_text = get_string('error_payment', 'enrol_authorizedotnet');
 $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
 ?>
 <!-- Load the jQuery library from the Google CDN -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <div class="payment-wrap">
   <div class="authorize-img-wrap">
     <div class="authorize-img">
-      <img src="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/authorize-net-logo.jpg">
+      <img src="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/authorize-net-logo.png">
     </div>
+      <div class="authorize-card-img"><img src="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/paynow.png"></div>
   </div>
   <div class="order-info">
-    <b class='heading-athorzed'>Order Info</b>
+    <b class='heading-athorzed'><?php echo get_string('orderinfo', 'enrol_authorizedotnet'); ?></b>
     <div class="form-group-authorized-net">
       <label for="card-number"><b>Cost :</b></label>
       <div class="authorized-net-input-wrap">
@@ -56,37 +52,36 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
     </div>
   </div>
   <div class='payment-info-authorized'>
-    <b class='heading-athorzed'>Payment Info</b>
-      <div class="authorize-card-img"><img src="<?php echo $CFG->wwwroot; ?>/enrol/authorizedotnet/pix/paynow.png"></div>
+    <b class='heading-athorzed'><?php echo get_string('paymentinfo', 'enrol_authorizedotnet'); ?></b>
       <!-- card number -->
     <div class="form-group-authorized-net">
-      <label for="card-number">Card Number</label>
+      <label for="card-number"><?php echo get_string('cardnumber', 'enrol_authorizedotnet'); ?></label>
       <span class="requiredstar">*</span> 
       <div class="authorized-net-input-wrap">
-      <input type="text" name="cardNumber" id="card-number" placeholder="<?php echo get_string('cardnumberex', 'enrol_authorizedotnet'); ?>"/><div><?php echo get_string('cardnumberreq', 'enrol_authorizedotnet'); ?></div>
+      <input type="number" name="cardNumber" id="card-number" placeholder="<?php echo get_string('cardnumberex', 'enrol_authorizedotnet'); ?>"/><div><?php echo get_string('cardnumberreq', 'enrol_authorizedotnet'); ?></div>
       </div>
     </div>
     <!-- exp date -->
     <div class="form-group-authorized-net">
-      <label for="">Exp Date</label>
+      <label for=""><?php echo get_string('expdate', 'enrol_authorizedotnet'); ?></label>
       <span class="requiredstar">*</span> 
       <div class="authorized-net-input-wrap exp-date">
-        <input type="text" name="expMonth" id="exp-month" placeholder="<?php echo get_string('expmonthex', 'enrol_authorizedotnet'); ?>"/>
-        <input type="text" name="expYear" id="exp-year" placeholder="<?php echo get_string('expyearex', 'enrol_authorizedotnet'); ?>"/><div>(mm yyyy)</div>
+        <input type="number" name="expMonth" id="exp-month" maxlength="2" placeholder="<?php echo get_string('expmonthex', 'enrol_authorizedotnet'); ?>"/>
+        <input type="number" name="expYear" id="exp-year" maxlength="4" placeholder="<?php echo get_string('expyearex', 'enrol_authorizedotnet'); ?>"/><div>(mm yyyy)</div>
       </div>
     </div>
     <!-- card code -->
     <div class="form-group-authorized-net">
-      <label for="card-coder">Card Code</label>
+      <label for="card-coder"><?php echo get_string('cardcode', 'enrol_authorizedotnet'); ?></label>
       <span class="requiredstar">*</span>
       <div class="authorized-net-input-wrap">
-      <input type="text" name="cardCode" id="card-code" placeholder="<?php echo get_string('cardcodeex', 'enrol_authorizedotnet'); ?>"/>
-    <div> <a href="">what's that</a></div>
+      <input type="number" name="cardCode" id="card-code" maxlength="4" placeholder="<?php echo get_string('cardcodeex', 'enrol_authorizedotnet'); ?>"/>
+    <div> <a href="https://www.cvvnumber.com/"><?php echo get_string('whatscvv', 'enrol_authorizedotnet'); ?></a></div>
   </div>
     </div>
   </div>
   <div class='billing-info-athorized'>
-    <b class='heading-athorzed'>Billing Info</b>
+    <b class='heading-athorzed'><?php echo get_string('billinginfo', 'enrol_authorizedotnet'); ?></b>
     <!-- first name -->
     <div class="form-group-authorized-net">
       <span class="requiredstar">*</span>
@@ -109,7 +104,7 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
     <div class="form-group-authorized-net">
       <span class="requiredstar">*</span>
       <label for="ZIP Code"><?php echo get_string('ZIP', 'enrol_authorizedotnet'); ?></label>
-      <input type="text" name="ZIP Code" id="zip" placeholder="<?php echo get_string('ZIPex', 'enrol_authorizedotnet'); ?>">
+      <input type="number" name="ZIP Code" id="zip" placeholder="<?php echo get_string('ZIPex', 'enrol_authorizedotnet'); ?>">
     </div>
   </div>
   <div class="auth-submit">
@@ -214,14 +209,19 @@ $PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', '
     border-top: 0.06rem solid #eee;
 }
 .loader {
-  margin: auto;
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
-  width: 120px;
-  height: 120px;
-  -webkit-animation: spin 2s linear infinite; /* Safari */
-  animation: spin 2s linear infinite;
+    margin: auto;
+    border: 0.5rem solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 0.5rem solid #3498db;
+    width: 2.5rem;
+    height: 2.5rem;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+input[type='number']::-webkit-inner-spin-button, 
+input[type='number']::-webkit-outer-spin-button { 
+    -webkit-appearance: none;    
+    appearance: none;
 }
 @media only screen and (max-width: 700px) {
   .generalbo {

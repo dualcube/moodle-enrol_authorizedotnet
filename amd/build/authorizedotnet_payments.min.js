@@ -11,17 +11,17 @@ define(['jquery', 'core/ajax'
 
 
             $("#final-payment-button").click(function() {
-
-                var payment_card_number = document.getElementById("card-number").value;
-                var month = document.getElementById("exp-month").value;
-                var year = document.getElementById("exp-year").value;
-                var card_code = document.getElementById("card-code").value;
-                var firstname = document.getElementById("firstname").value;
-                var lastname = document.getElementById("lastname").value;
-                var address = document.getElementById("address").value;
-                var zip = document.getElementById("zip").value;
+                $("#payment_error").html(' ');
+                var payment_card_number = $("#card-number").val();
+                var month = $("#exp-month").val();
+                var year = $("#exp-year").val();
+                var card_code = $("#card-code").val();
+                var firstname = $("#firstname").val();
+                var lastname = $("#lastname").val();
+                var address = $("#address").val();
+                var zip = $("#zip").val();
                 if(payment_card_number == '' || month == '' || year == '' || card_code == '' ||firstname == '' ||  lastname == '' || address == '' || zip == ''){
-                    $("#payment_error").html('<p style="color:red;"><b>'+requiredmissing+'</b></p>');
+                    $("#payment_error").html('<p style="color:red;">'+requiredmissing+'</p>');
                 }
                 else{
                     var promises = ajax.call([{
@@ -57,19 +57,17 @@ define(['jquery', 'core/ajax'
                     
                     promises[0].then(function(data) {
                         console.log(data.status);
-                        console.log(data.error);
-                        $("#error_massage").html('<p style="color:red;"><b>'+data.error+'</b></p>');
                         $('.loader').hide();
                         $('#final-payment-button').show();
-                        if (data.status == 'error') {
-                            $("#payment_error").html('<p style="color:red;"><b>'+error_payment_text+'</b></p>');
-                        } else {
+                        if (data.status == 'success') {
                             location.reload();
+                        } else {
+                            $("#payment_error").html('<p style="color:red;">'+data.status+'</p>');
                         }
                     }).fail(function(ex) { // do something with the exception 
                         $('.loader').hide();
                         $('#final-payment-button').show();
-                        $("#payment_error").html('<p style="color:red;"><b>'+ex.error+'</b></p>');
+                        $("#payment_error").html('<p style="color:red;">'+ex.error+'</p>');
                     });
                 }
             });
