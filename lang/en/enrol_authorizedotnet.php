@@ -18,7 +18,8 @@
  * Strings for component 'enrol_authorizedotnet', language 'en'.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2021 DualCube
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -87,3 +88,8 @@ $string['ZIPex'] = '46214-9707';
 $string['clientkey_descrition'] = 'Generate client key from merchant account & paste here';
 $string['transactionkey_description'] = 'Copy API Transaction Key from merchant account & paste here';
 $string['loginid_description'] = 'Copy API Login ID from merchant account & paste here';
+$string['invaliduserid'] = 'Not a valid user id';
+$string['invalidcourseid'] = 'Not a valid course id';
+$string['invalidcontextid'] = 'Not a valid context id';
+$string['invalidintanceid'] = 'Not a valid instance id';
+$string['invaliduserid'] = 'Not a valid user id';

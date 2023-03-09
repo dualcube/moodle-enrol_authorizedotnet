@@ -9,11 +9,6 @@ define(['jquery', 'core/ajax'
                 $('.loader').hide();
             });
 
-            // When the user clicks on button, open the popup
-            $("#open-creditcard-popup").click(function() {
-                var popup = document.getElementById("net-pay-popup");
-                popup.classList.toggle("show");
-            });
 
             $("#final-payment-button").click(function() {
 
@@ -62,6 +57,8 @@ define(['jquery', 'core/ajax'
                     
                     promises[0].then(function(data) {
                         console.log(data.status);
+                        console.log(data.error);
+                        $("#error_massage").html('<p style="color:red;"><b>'+data.error+'</b></p>');
                         $('.loader').hide();
                         $('#final-payment-button').show();
                         if (data.status == 'error') {
@@ -74,7 +71,7 @@ define(['jquery', 'core/ajax'
                         $('#final-payment-button').show();
                         $("#payment_error").html('<p style="color:red;"><b>'+ex.error+'</b></p>');
                     });
-            }
+                }
             });
         }
     };
