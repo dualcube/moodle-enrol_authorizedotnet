@@ -55,7 +55,7 @@ global $PAGE;
       <span class="requiredstar">*</span> 
       <div class="authorized-net-input-wrap exp-date">
         <input type="number" name="expMonth" id="exp-month" maxlength="2" placeholder="<?php echo get_string('expmonthplaceholder', 'enrol_authorizedotnet'); ?>"/>
-        <input type="number" name="expYear" id="exp-year" maxlength="4" placeholder="<?php echo get_string('expyearplaceholder', 'enrol_authorizedotnet'); ?>"/><div>(mm yyyy)</div>
+        <input type="number" name="expYear" id="exp-year" maxlength="4" placeholder="<?php echo get_string('expyearplaceholder', 'enrol_authorizedotnet'); ?>"/><div><?php echo get_string('expdatedes', 'enrol_authorizedotnet'); ?></div>
       </div>
     </div>
     <!-- card code -->

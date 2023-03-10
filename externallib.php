@@ -239,39 +239,39 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         $PAGE->set_context($context);
                         $destination = "$CFG->wwwroot/course/view.php?id=$course->id";
                         $fullname = format_string($course->fullname, true, array('context' => $context));
-                        if (is_enrolled($context, null, '', true)) {} else {
+                        if (!is_enrolled($context, null, '', true)) {
                             $PAGE->set_url($destination);
                         }
-                        $order_status = 'success'; 
-                        $status_msg = 'Your Payment has been Successful!'; 
+                        $order_status = get_string('success','enrol_authorizedotnet'); 
+                        $status_msg = get_string('successmsg','enrol_authorizedotnet'); 
                     } else { 
-                        $error = "Transaction Failed! \n"; 
+                        $error = get_string('tarnsactionfail','enrol_authorizedotnet'); 
                         if ($tresponse->getErrors() != null) { 
-                            $error .= " Error Code  : " . $tresponse->getErrors()[0]->getErrorCode() . "<br/>"; 
-                            $error .= " Error Message : " . $tresponse->getErrors()[0]->getErrorText() . "<br/>"; 
+                            $error .= get_string('errorcode','enrol_authorizedotnet') . $tresponse->getErrors()[0]->getErrorCode() . "<br/>"; 
+                            $error .= get_string('errormsg','enrol_authorizedotnet') . $tresponse->getErrors()[0]->getErrorText() . "<br/>"; 
                         } 
                         $status_msg = $error; 
                     } 
                 // Or, print errors if the API request wasn't successful 
                 } else { 
-                    $error = "Transaction Failed! \n"; 
+                    $error = get_string('tarnsactionfail','enrol_authorizedotnet'); 
                     $tresponse = $response->getTransactionResponse(); 
                     if ($tresponse != null && $tresponse->getErrors() != null) { 
-                        $error .= " Error Code  : " . $tresponse->getErrors()[0]->getErrorCode() . "<br/>"; 
-                        $error .= " Error Message : " . $tresponse->getErrors()[0]->getErrorText() . "<br/>"; 
+                        $error .= get_string('errorcode','enrol_authorizedotnet') . $tresponse->getErrors()[0]->getErrorCode() . "<br/>"; 
+                        $error .= get_string('errormsg','enrol_authorizedotnet')  . $tresponse->getErrors()[0]->getErrorText() . "<br/>"; 
                         $error_msg = $tresponse->getErrors()[0]->getErrorText();
                     } else { 
-                        $error .= " Error Code  : " . $response->getMessages()->getMessage()[0]->getCode() . "<br/>"; 
-                        $error .= " Error Message : " . $response->getMessages()->getMessage()[0]->getText() . "<br/>"; 
+                        $error .= get_string('errorcode','enrol_authorizedotnet') . $response->getMessages()->getMessage()[0]->getCode() . "<br/>"; 
+                        $error .= get_string('errormsg','enrol_authorizedotnet')  . $response->getMessages()->getMessage()[0]->getText() . "<br/>"; 
                         $error_msg = $response->getMessages()->getMessage()[0]->getText();
                     } 
                     $status_msg = $error; 
                 } 
             } else { 
-                $status_msg =  "Transaction Failed! No response returned"; 
+                $status_msg = get_string('transactionfailmsg','enrol_authorizedotnet') ; 
             } 
         } else { 
-            $status_msg = "Error on form submission."; 
+            $status_msg = get_string('errorsubmission','enrol_authorizedotnet') ; 
         }
         $result = array();
         if($order_status == 'error'){
