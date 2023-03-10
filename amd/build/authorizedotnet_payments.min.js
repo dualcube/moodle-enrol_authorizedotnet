@@ -1,9 +1,6 @@
-define(['jquery', 'core/ajax'
-    ],
-    function($, ajax
-    ) {
+define(['jquery', 'core/ajax'], function($, ajax) {
     return {
-        authorizedotnet_payments: function(client_key, login_id, amount, instance_currency, transaction_key, instance_courseid, user_id, user_email, instance_id, context_id, description, invoice, sequence, timestamp, error_payment_text, requiredmissing) {
+        authorizedotnet_payments: function(instance_courseid, user_id, instance_id, amount) {
             var pay_type = 0;
             $(document).ready(function() {
                 $('.loader').hide();
@@ -27,20 +24,10 @@ define(['jquery', 'core/ajax'
                     var promises = ajax.call([{
                         methodname: 'moodle_authorizedotnet_payprocess',
                         args: { 
-                            client_key: client_key, 
-                            login_id: login_id, 
-                            amount: amount, 
-                            instance_currency: instance_currency, 
-                            transaction_key: transaction_key, 
                             instance_courseid: instance_courseid, 
-                            user_id: user_id, 
-                            user_email: user_email, 
+                            user_id: user_id,  
                             instance_id: instance_id, 
-                            context_id: context_id, 
-                            description: description, 
-                            invoice: invoice, 
-                            sequence: sequence, 
-                            timestamp: timestamp, 
+                            amount: amount,  
                             payment_card_number: payment_card_number, 
                             month: month, 
                             year: year, 
@@ -51,8 +38,8 @@ define(['jquery', 'core/ajax'
                             zip: zip,
                         },
                     }]);
-                    $('.loader').show();
                     $('#final-payment-button').hide();
+                    $('.loader').show();
                     
                     promises[0].then(function(data) {
                         console.log(data.status);

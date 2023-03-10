@@ -22,16 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 global $PAGE;
-$login_id = $this->get_config('loginid');
-$transaction_key = $this->get_config('transactionkey');
-$client_key = $this->get_config('clientkey');
-$amount = $cost;
-$description = $coursefullname;
-$invoice = date('YmdHis');
-$sequence = rand(1, 1000);
-$timestamp = time();
-$error_payment_text = get_string('error_payment', 'enrol_authorizedotnet');
-$requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
 ?>
 <div class="payment-wrap">
   <div class="authorize-img-wrap">
@@ -113,7 +103,7 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
   </div>
 </div>
 <?php
-$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($client_key, $login_id, $amount, $instance->currency, $transaction_key, $instance->courseid, $USER->id, $USER->email, $instance->id, $context->id, $description, $invoice, $sequence, $timestamp, $error_payment_text, $requiredmissing));
+$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($instance->courseid,  $USER->id, $instance->id, $cost));
 ?>
 <style>
 .payment-wrap {
