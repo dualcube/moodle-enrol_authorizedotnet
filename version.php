@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2022050900;
+$plugin->version   = 2022051000;
 $plugin->requires  = 2015111600;
 $plugin->component = 'enrol_authorizedotnet';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.6.2 (Build: 2022050900)';
+$plugin->release   = '2.6.2 (Build: 2022051000)';
 $plugin->cron      = 60;

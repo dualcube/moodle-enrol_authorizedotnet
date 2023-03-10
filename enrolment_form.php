@@ -25,7 +25,6 @@ global $PAGE;
 $login_id = $this->get_config('loginid');
 $transaction_key = $this->get_config('transactionkey');
 $client_key = $this->get_config('clientkey');
-$auth_mode = $this->get_config('checkproductionmode');
 $amount = $cost;
 $description = $coursefullname;
 $invoice = date('YmdHis');
@@ -34,7 +33,6 @@ $timestamp = time();
 $error_payment_text = get_string('error_payment', 'enrol_authorizedotnet');
 $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
 ?>
-<!-- Load the jQuery library from the Google CDN -->
 <div class="payment-wrap">
   <div class="authorize-img-wrap">
     <div class="authorize-img">
@@ -45,7 +43,7 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
   <div class="order-info">
     <b class='heading-athorzed'><?php echo get_string('orderinfo', 'enrol_authorizedotnet'); ?></b>
     <div class="form-group-authorized-net">
-      <label for="cost"><b>Cost :</b></label>
+      <label for="cost"><b><?php echo get_string('cost', 'enrol_authorizedotnet'); ?></b></label>
       <div class="authorized-net-input-wrap">
     <p><b><?php echo " {$instance->currency} {$localisedcost}"; ?></b></p>
       </div>
@@ -115,7 +113,7 @@ $requiredmissing = get_string('requiredmissing', 'enrol_authorizedotnet');
   </div>
 </div>
 <?php
-$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($client_key, $login_id, $amount, $instance->currency, $transaction_key, $instance->courseid, $USER->id, $USER->email, $instance->id, $context->id, $description, $invoice, $sequence, $timestamp, $auth_mode, $error_payment_text, $requiredmissing));
+$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($client_key, $login_id, $amount, $instance->currency, $transaction_key, $instance->courseid, $USER->id, $USER->email, $instance->id, $context->id, $description, $invoice, $sequence, $timestamp, $error_payment_text, $requiredmissing));
 ?>
 <style>
 .payment-wrap {

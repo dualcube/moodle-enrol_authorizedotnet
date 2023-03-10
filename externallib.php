@@ -1,9 +1,5 @@
 <?php
 require_once("$CFG->libdir/externallib.php");
-require_once("../../config.php");
-require_once('../../lib/setup.php');
-require_once("lib.php");
-require_once($CFG->libdir.'/enrollib.php');
 require_once("$CFG->dirroot/enrol/authorizedotnet/lib.php");
 // Include Authorize.Net PHP sdk 
 require 'authorize_net_sdk_php/autoload.php';  
@@ -35,7 +31,6 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                 'lastname' => new external_value(PARAM_TEXT, 'The item id to operate on'),
                 'address' => new external_value(PARAM_TEXT, 'The item id to operate on'),
                 'zip' => new external_value(PARAM_TEXT, 'The item id to operate on'),
-                'auth_mode' => new external_value(PARAM_TEXT, 'The item id to operate on')
             )  
         );
     }
@@ -46,8 +41,9 @@ class moodle_enrol_authorizedotnet_external extends external_api {
             )
         );
     }
-    public static function authorizedotnet_payment_processing($client_key, $login_id, $amount, $instance_currency, $transaction_key, $instance_courseid, $user_id, $user_email, $instance_id, $context_id, $description, $invoice, $sequence, $timestamp, $payment_card_number, $month, $year, $card_code,$firstname, $lastname, $address, $zip, $auth_mode) {
+    public static function authorizedotnet_payment_processing($client_key, $login_id, $amount, $instance_currency, $transaction_key, $instance_courseid, $user_id, $user_email, $instance_id, $context_id, $description, $invoice, $sequence, $timestamp, $payment_card_number, $month, $year, $card_code,$firstname, $lastname, $address, $zip) {
         global $DB, $CFG, $PAGE;
+        $plugin = enrol_get_plugin('authorizedotnet');
         if (! $user = $DB->get_record("user", array("id" => $user_id))) {
             print_error(get_string('invaliduserid','enrol_authorizedotnet')); die;
         }
@@ -62,6 +58,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
         }
         $payment_id = $error_msg = $status_msg = '';
         $order_status = 'error';
+        $auth_mode = $plugin->get_config('checkproductionmode');
         $paymnet_env = $auth_mode && $auth_mode == 1 ? 'PRODUCTION': 'SANDBOX'; // or PRODUCTION 
         // Check whether card information is not empty 
         if(!empty($payment_card_number) && !empty($month) && !empty($year) && !empty($card_code)){ 
@@ -144,7 +141,6 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                         } else {
                             $teacher = false;
                         }
-                        $plugin = enrol_get_plugin('authorizedotnet');
                         $mailstudents = $plugin->get_config('mailstudents');
                         $mailteachers = $plugin->get_config('mailteachers');
                         $mailadmins   = $plugin->get_config('mailadmins');

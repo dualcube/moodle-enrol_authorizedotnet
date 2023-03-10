@@ -3,7 +3,7 @@ define(['jquery', 'core/ajax'
     function($, ajax
     ) {
     return {
-        authorizedotnet_payments: function(client_key, login_id, amount, instance_currency, transaction_key, instance_courseid, user_id, user_email, instance_id, context_id, description, invoice, sequence, timestamp, auth_mode, error_payment_text, requiredmissing) {
+        authorizedotnet_payments: function(client_key, login_id, amount, instance_currency, transaction_key, instance_courseid, user_id, user_email, instance_id, context_id, description, invoice, sequence, timestamp, error_payment_text, requiredmissing) {
             var pay_type = 0;
             $(document).ready(function() {
                 $('.loader').hide();
@@ -49,7 +49,6 @@ define(['jquery', 'core/ajax'
                             lastname: lastname,
                             address: address,
                             zip: zip,
-                            auth_mode: auth_mode
                         },
                     }]);
                     $('.loader').show();

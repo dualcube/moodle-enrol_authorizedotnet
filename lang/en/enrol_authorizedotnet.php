@@ -75,6 +75,7 @@ $string['orderinfo'] = 'Order Information';
 $string['paymentinfo'] = 'Payment Information';
 $string['billinginfo'] = 'Billing Information';
 $string['cardnumber'] = 'Card Number';
+$string['cost'] = 'Cost :';
 $string['cardnumberplaceholder'] = '6011308854249711';
 $string['cardnumberreq'] = '(enter card number without spacec or dashes)';
 $string['expdate'] = 'Expiry Date';
