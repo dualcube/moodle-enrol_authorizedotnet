@@ -17,8 +17,9 @@
 /**
  * Defines message providers (types of message sent) for the Stripe enrolment plugin.
  *
- * @package    enrol_stripepayment
- * @copyright  2021 DualCube
+ * @package    enrol_authorizedotnet
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

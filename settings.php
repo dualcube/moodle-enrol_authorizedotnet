@@ -18,7 +18,8 @@
  * Authorize.net enrolments plugin settings and presets.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2021 DualCube
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -58,6 +59,9 @@ if ($ADMIN->fulltree) {
                    get_string('expiredaction', 'enrol_authorizedotnet'),
                    get_string('expiredaction_help', 'enrol_authorizedotnet'), ENROL_EXT_REMOVED_SUSPENDNOROLES, $options));
 
+    $settings->add(new admin_setting_description('enrol_authorizedotnet/currency',
+    get_string('currency', 'enrol_authorizedotnet'), get_string('currencynote', 'enrol_authorizedotnet')));
+
     // Enrol instance defaults.
     $settings->add(new admin_setting_heading('enrol_authorizedotnet_defaults',
         get_string('enrolinstancedefaults', 'admin'), get_string('enrolinstancedefaults_desc', 'admin')));
@@ -71,9 +75,6 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/cost',
                    get_string('cost', 'enrol_authorizedotnet'), '', 0, PARAM_FLOAT, 4));
 
-    $currencies = enrol_get_plugin('authorizedotnet')->get_currencies();
-    $settings->add(new admin_setting_configselect('enrol_authorizedotnet/currency',
-    get_string('currency', 'enrol_authorizedotnet'), '', 'USD', $currencies));
     if (!during_initial_install()) {
         $options = get_default_enrol_roles(context_system::instance());
         $student = get_archetype_roles('student');

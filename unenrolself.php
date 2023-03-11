@@ -18,7 +18,8 @@
  * Authorize.net enrolment plugin - support for user self unenrolment.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2021 DualCube
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

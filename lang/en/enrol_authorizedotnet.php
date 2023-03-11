@@ -18,7 +18,8 @@
  * Strings for component 'enrol_authorizedotnet', language 'en'.
  *
  * @package    enrol_authorizedotnet
- * @copyright  2021 DualCube
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,6 +39,7 @@ $string['cost'] = 'Enrol cost';
 $string['costerror'] = 'The enrolment cost is not numeric';
 $string['costorkey'] = 'Please choose one of the following methods of enrolment.';
 $string['currency'] = 'Currency';
+$string['currencynote'] = 'Authorize.Net supports a single currency per gateway account, so if you need to accept payments in multiple currencies, your client must have multiple gateway accounts and your code will switch to the correct currency.';
 $string['assignrole'] = 'Assign role';
 $string['defaultrole'] = 'Default role assignment';
 $string['defaultrole_desc'] = 'Select role which should be assigned to users during Authorize.net enrolments';
@@ -68,12 +70,38 @@ $string['make_payment'] = 'Make Your Payment';
 $string['card_payment'] = 'Card Payment';
 $string['account_payment'] = 'Account Payment';
 $string['pay'] = 'Pay';
-$string['error_payment'] = 'There are some issue';
+$string['success'] = 'success';
+$string['successmsg'] = 'Your Payment has been Successful!';
+$string['tarnsactionfail'] = 'Transaction Failed! ';
+$string['errorcode'] = ' Error Code  : ';
+$string['errormsg'] = ' Error Message : ';
+$string['transactionfailmsg'] = 'Transaction Failed! No response returned';
+$string['errorsubmission'] = 'Error on form submission.';
+$string['orderinfo'] = 'Order Information';
+$string['paymentinfo'] = 'Payment Information';
+$string['billinginfo'] = 'Billing Information';
 $string['cardnumber'] = 'Card Number';
-$string['expmonth'] = 'Expiry Month';
-$string['expyear'] = 'Expiry Year';
+$string['cost'] = 'Cost :';
+$string['cardnumberplaceholder'] = '6011308854249711';
+$string['cardnumberreq'] = '(enter card number without spacec or dashes)';
+$string['expdate'] = 'Expiry Date';
+$string['expdatedes'] = '(mm yyyy)';
+$string['expmonthplaceholder'] = '09';
+$string['expyearplaceholder'] = '2025';
 $string['cardcode'] = 'Card Code';
-
+$string['cardcodeplaceholder'] = 'xxx';
+$string['whatscvv'] = 'what\'s that';
+$string['firstname'] = 'First Name';
+$string['lastname'] = 'Last Name';
+$string['address'] = 'Address';
+$string['addressplaceholder'] = '808 E UTAH VALLY DR';
+$string['ZIP'] = 'ZIP/Postal Code';
+$string['ZIPplaceholder'] = '46214-9707';
 $string['clientkey_descrition'] = 'Generate client key from merchant account & paste here';
 $string['transactionkey_description'] = 'Copy API Transaction Key from merchant account & paste here';
 $string['loginid_description'] = 'Copy API Login ID from merchant account & paste here';
+$string['invaliduserid'] = 'Not a valid user id';
+$string['invalidcourseid'] = 'Not a valid course id';
+$string['invalidcontextid'] = 'Not a valid context id';
+$string['invalidintanceid'] = 'Not a valid instance id';
+$string['invaliduserid'] = 'Not a valid user id';
