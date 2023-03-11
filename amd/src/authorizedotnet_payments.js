@@ -1,6 +1,6 @@
 define(['jquery', 'core/ajax'], function($, ajax) {
     return {
-        authorizedotnet_payments: function(instance_courseid, user_id, instance_id, amount) {
+        authorizedotnet_payments: function(instance_courseid, user_id, instance_id) {
             var pay_type = 0;
             $(document).ready(function() {
                 $('.loader').hide();
@@ -27,7 +27,6 @@ define(['jquery', 'core/ajax'], function($, ajax) {
                             instance_courseid: instance_courseid, 
                             user_id: user_id,  
                             instance_id: instance_id, 
-                            amount: amount,  
                             payment_card_number: payment_card_number, 
                             month: month, 
                             year: year, 

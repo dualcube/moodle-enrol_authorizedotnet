@@ -103,7 +103,7 @@ global $PAGE;
   </div>
 </div>
 <?php
-$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($instance->courseid,  $USER->id, $instance->id, $cost));
+$PAGE->requires->js_call_amd('enrol_authorizedotnet/authorizedotnet_payments', 'authorizedotnet_payments', array($instance->courseid,  $USER->id, $instance->id));
 ?>
 <style>
 .payment-wrap {

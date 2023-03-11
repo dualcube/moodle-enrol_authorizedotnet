@@ -12,7 +12,6 @@ class moodle_enrol_authorizedotnet_external extends external_api {
                 'instance_courseid' => new external_value(PARAM_RAW, 'The course id to operate on'),
                 'user_id' => new external_value(PARAM_RAW, 'The user id to operate on'),
                 'instance_id' => new external_value(PARAM_RAW, 'The instance id to operate on'),
-                'amount' => new external_value(PARAM_RAW, 'cost of item'),
                 'payment_card_number' => new external_value(PARAM_TEXT, 'The card number for card transaction'),
                 'month' => new external_value(PARAM_TEXT, 'The expiry mounth card for transaction'),
                 'year' => new external_value(PARAM_TEXT, 'The expiry year for card transaction'),
@@ -31,7 +30,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
             )
         );
     }
-    public static function authorizedotnet_payment_processing($instance_courseid, $user_id, $instance_id, $amount, $payment_card_number, $month, $year, $card_code,$firstname, $lastname, $address, $zip) {
+    public static function authorizedotnet_payment_processing($instance_courseid, $user_id, $instance_id, $payment_card_number, $month, $year, $card_code,$firstname, $lastname, $address, $zip) {
         global $DB, $CFG, $PAGE;
         $plugin = enrol_get_plugin('authorizedotnet');
         if (! $user = $DB->get_record("user", array("id" => $user_id))) {
@@ -98,7 +97,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
             // Create a transaction 
             $transaction_request_type = new AnetAPI\TransactionRequestType(); 
             $transaction_request_type->setTransactionType("authCaptureTransaction");    
-            $transaction_request_type->setAmount($amount); 
+            $transaction_request_type->setAmount($plugin_instance->cost); 
             $transaction_request_type->setOrder($order); 
             $transaction_request_type->setPayment($payment_one); 
             $transaction_request_type->setBillTo($customerAddress); 
