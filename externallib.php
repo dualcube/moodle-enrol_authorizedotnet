@@ -274,7 +274,7 @@ class moodle_enrol_authorizedotnet_external extends external_api {
         }
         $result = array();
         if($order_status == 'error'){
-            $result['status'] = $error_msg;
+            $result['status'] = $status_msg;
         }
         else{
             $result['status'] = $order_status;
