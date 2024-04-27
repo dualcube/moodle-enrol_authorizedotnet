@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>authorize-dot-net-sdk-php</location>
+        <name>authorizeNet/sdk-php</name>
+        <version>2.0.2</version>
+        <repository>https://github.com/AuthorizeNet/sdk-php.git</repository>
+        <license>Services Agreement</license>
+        <licenseversion>v.25JUN20</licenseversion>
+    </library>
+</libraries>

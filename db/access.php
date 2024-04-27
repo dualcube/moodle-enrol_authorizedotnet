@@ -32,7 +32,7 @@ $capabilities = array(
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
-        )
+        ),
     ),
     'enrol/authorizedotnet:manage' => array(
         'captype' => 'write',
@@ -40,19 +40,19 @@ $capabilities = array(
         'archetypes' => array(
             'manager' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-        )
+        ),
     ),
     'enrol/authorizedotnet:unenrol' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
-        )
+        ),
     ),
     'enrol/authorizedotnet:unenrolself' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
-        )
+        ),
     ),
 );

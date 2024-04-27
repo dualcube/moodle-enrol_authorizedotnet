@@ -91,7 +91,7 @@ if ($mform->is_cancelled()) {
                         'roleid' => $data->roleid,
                         'enrolperiod' => $data->enrolperiod,
                         'enrolstartdate' => $data->enrolstartdate,
-                        'enrolenddate' => $data->enrolenddate
+                        'enrolenddate' => $data->enrolenddate,
                     );
         $plugin->add_instance($course, $fields);
     }

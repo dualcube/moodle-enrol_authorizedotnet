@@ -13,7 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
+defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot.'/enrol/authorizedotnet/classes/enrol_authorizedotnet_paymentprocess.php');
+global $PAGE;
 /**
  * Authorize.net enrolment plugin.
  *
@@ -22,8 +24,6 @@
  * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 class enrol_authorizedotnet_plugin extends enrol_plugin {
     /**
      * Lists all currencies available for plugin.
@@ -102,6 +102,8 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         }
 
         $context = context_course::instance($instance->courseid);
+        '<pre>';
+        // print_r(has_capability('enrol/authorizedotnet:config', $context));
         if (has_capability('enrol/authorizedotnet:config', $context)) {
             $managelink = new moodle_url('/enrol/authorizedotnet/edit.php',
                                          array('courseid' => $instance->courseid, 'id' => $instance->id));
@@ -142,7 +144,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
     public function get_newinstance_link($courseid) {
         $context = context_course::instance($courseid, MUST_EXIST);
 
-        if (!has_capability('moodle/course:enrolconfig', $context) or !has_capability('enrol/authorizedotnet:config', $context)) {
+        if (!has_capability('moodle/course:enrolconfig', $context) || !has_capability('enrol/authorizedotnet:config', $context)) {
             return null;
         }
 
@@ -228,12 +230,19 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
                 $usercity        = $USER->city;
                 $instancename    = $this->get_instance_name($instance);
 
-                include($CFG->dirroot.'/enrol/authorizedotnet/enrolment_form.php');
+                include_once($CFG->dirroot.'/enrol/authorizedotnet/enrolment_form.php');
+                $mform = new enrol_authorizedotnet_form(null, array('instance' => $instance, 'localisedcost' => $localisedcost));
+                // if we want to pass a object through constructor we cant pass it directly
+                if ($data = $mform->get_data()) {
+                    if (confirm_sesskey()) {
+                        $paymentprocess = new \enrol_authorizedotnet_payment_process();
+                        $paymentprocess->process_payment($data, $instance->courseid, $USER->id, $instance->id);
+                    }
+                }
+                $mform->display();
             }
-
         }
-
-        return $OUTPUT->box(ob_get_clean());
+        return $OUTPUT->box(ob_get_clean()); 
     }
     /**
      * Restore instance and map settings.
@@ -256,7 +265,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
                 'currency'   => $data->currency,
             );
         }
-        if ($merge and $instances = $DB->get_records('enrol', $merge, 'id')) {
+        if ($merge && $instances = $DB->get_records('enrol', $merge, 'id')) {
             $instance = reset($instances);
             $instanceid = $instance->id;
         } else {
@@ -269,7 +278,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      *
      * @param restore_enrolments_structure_step $step
      * @param stdClass $data
-     * @param stdClass $instance 
+     * @param stdClass $instance
      * @param int $userid
      * @param int $oldinstancestatus
      */

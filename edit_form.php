@@ -14,18 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir.'/formslib.php');
 /**
  * Adds new instance of enrol_authorizedotnet to specified course or edits current instance.
- * 
+ *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
  * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir.'/formslib.php');
 class enrol_authorizedotnet_edit_form extends moodleform {
     /**
      * Sets up moodle form.
@@ -39,7 +38,6 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         list($instance, $plugin, $context) = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('pluginname', 'enrol_authorizedotnet'));
-
         $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
         $mform->setType('name', PARAM_TEXT);
         $options = array(ENROL_INSTANCE_ENABLED  => get_string('yes'),
@@ -106,7 +104,7 @@ class enrol_authorizedotnet_edit_form extends moodleform {
 
         list($instance, $plugin, $context) = $this->_customdata;
 
-        if (!empty($data['enrolenddate']) and $data['enrolenddate'] < $data['enrolstartdate']) {
+        if (!empty($data['enrolenddate']) && $data['enrolenddate'] < $data['enrolstartdate']) {
             $errors['enrolenddate'] = get_string('enrolenddaterror', 'enrol_authorizedotnet');
         }
 
@@ -114,7 +112,6 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         if (!is_numeric($cost)) {
             $errors['cost'] = get_string('costerror', 'enrol_authorizedotnet');
         }
-
         return $errors;
     }
 }
