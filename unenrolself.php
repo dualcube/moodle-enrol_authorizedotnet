@@ -24,15 +24,15 @@
  */
 
 require('../../config.php');
-
+defined('MOODLE_INTERNAL') || die();
 $enrolid = required_param('enrolid', PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
-
+require_login();
 $instance = $DB->get_record('enrol', array('id' => $enrolid, 'enrol' => 'authorizedotnet'), '*', MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $instance->courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
-require_login();
+
 if (!is_enrolled($context)) {
     redirect(new moodle_url('/'));
 }

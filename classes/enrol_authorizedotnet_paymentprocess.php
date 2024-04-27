@@ -13,6 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Authorize.net enrolment plugin version specification.
+ *
+ * @package    enrol_authorizedotnet
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 require_once( "$CFG->dirroot/enrol/authorizedotnet/authorize-dot-net-sdk-php/autoload.php");
 use net\authorize\api\contract\v1 as AnetAPI;
@@ -254,7 +263,6 @@ class enrol_authorizedotnet_payment_process {
         if ($response == null) {
             $bool = 0;
         }
-        echo "bool::".$bool;
         return $bool;
     }
 
@@ -370,7 +378,7 @@ class enrol_authorizedotnet_payment_process {
                     $enrolauthorizedotnet->response_code = $paymentresponse;
                     $enrolauthorizedotnet->timeupdated = time();
                     /* Inserting value to enrol_authorizedotnet table */
-                    $ret1 = $DB->insert_record("enrol_authorizedotnet", $enrolauthorizedotnet, false);
+                    $DB->insert_record("enrol_authorizedotnet", $enrolauthorizedotnet, false);
                     if ($this->plugininstance->enrolperiod) {
                         $timestart = time();
                         $timeend   = $timestart + $this->plugininstance->enrolperiod;
