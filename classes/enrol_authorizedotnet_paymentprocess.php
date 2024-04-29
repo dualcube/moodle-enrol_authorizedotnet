@@ -27,7 +27,7 @@ require_once( "$CFG->dirroot/enrol/authorizedotnet/authorize-dot-net-sdk-php/aut
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
 /**
- * Authorize.net enrolments plugin settings and presets.
+ * class to apply payment process
  *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
@@ -297,65 +297,36 @@ class enrol_authorizedotnet_payment_process {
                     $mailteachers = $this->plugin->get_config('mailteachers');
                     $mailadmins   = $this->plugin->get_config('mailadmins');
                     $shortname = format_string($this->course->shortname, true, array('context' => $this->context));
+                    $userdetails = new stdClass();
+                    $userdetails->course = format_string($this->course->fullname, true, array('context' => $coursecontext));
+                    $userdetails->user = fullname($this->user);
+                    $thisuser = $this->user;
+                    $userdetails->profileurl = "$CFG->wwwroot/user/view.php?id=$thisuser->id";
+                    $eventdata = new \core\message\message();
+                    $eventdata->component         = 'enrol_authorizedotnet';
+                    $eventdata->name              = 'authorizedotnet_enrolment';
+                    $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
+                    $eventdata->fullmessageformat = FORMAT_PLAIN;
+                    $eventdata->fullmessagehtml   = '';
+                    $eventdata->smallmessage      = '';
                     if (!empty($mailstudents)) {
-                        $userdetails = new stdClass();
-                        $userdetails->coursename = format_string($this->course->fullname, true, array('context' => $coursecontext));
-                        $thisuser = $this->user;
-                        $userdetails->profileurl = "$CFG->wwwroot/user/view.php?id=$thisuser->id";
-                        if ($CFG->version >= 2015051100) {
-                            $eventdata = new \core\message\message();
-                        } else {
-                            $eventdata = new stdClass();
-                        }
-                        $eventdata->component         = 'enrol_authorizedotnet';
-                        $eventdata->name              = 'authorizedotnet_enrolment';
                         $eventdata->userfrom          = empty($teacher) ? core_user::get_noreply_user() : $teacher;
                         $eventdata->userto            = $this->user;
-                        $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
-                        $eventdata->fullmessage       = get_string('welcometocoursetext', '', $userdetails);
-                        $eventdata->fullmessageformat = FORMAT_PLAIN;
-                        $eventdata->fullmessagehtml   = '';
-                        $eventdata->smallmessage      = '';
+                        $eventdata->fullmessage       = get_string('welcometocoursetext', '', $userdetails); 
                         message_send($eventdata);
                     }
                     if (!empty($mailteachers) && !empty($teacher)) {
-                        $userdetails->course = format_string($this->course->fullname, true, array('context' => $coursecontext));
-                        $userdetails->user = fullname($this->user);
-                        if ($CFG->version >= 2015051100) {
-                            $eventdata = new \core\message\message();
-                        } else {
-                            $eventdata = new stdClass();
-                        }
-                        $eventdata->component         = 'enrol_authorizedotnet';
-                        $eventdata->name              = 'authorizedotnet_enrolment';
                         $eventdata->userfrom          = $this->user;
                         $eventdata->userto            = $teacher;
-                        $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
                         $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol', $userdetails);
-                        $eventdata->fullmessageformat = FORMAT_PLAIN;
-                        $eventdata->fullmessagehtml   = '';
-                        $eventdata->smallmessage      = '';
                         message_send($eventdata);
                     }
                     if (!empty($mailadmins)) {
-                        $userdetails->course = format_string($this->course->fullname, true, array('context' => $coursecontext));
-                        $userdetails->user = fullname($this->user);
                         $admins = get_admins();
                         foreach ($admins as $admin) {
-                            if ($CFG->version >= 2015051100) {
-                                $eventdata = new \core\message\message();
-                            } else {
-                                $eventdata = new stdClass();
-                            }
-                            $eventdata->component         = 'enrol_authorizedotnet';
-                            $eventdata->name              = 'authorizedotnet_enrolment';
                             $eventdata->userfrom          = $this->user;
                             $eventdata->userto            = $admin;
-                            $eventdata->subject           = get_string("enrolmentnew", 'enrol', $shortname);
                             $eventdata->fullmessage       = get_string('enrolmentnewuser', 'enrol', $userdetails);
-                            $eventdata->fullmessageformat = FORMAT_PLAIN;
-                            $eventdata->fullmessagehtml   = '';
-                            $eventdata->smallmessage      = '';
                             message_send($eventdata);
                         }
                     }

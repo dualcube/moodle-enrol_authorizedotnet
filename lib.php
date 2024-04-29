@@ -13,12 +13,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * authorize.net enrolment plugin.
+ *
+ * @package    enrol_authorizedotnet
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/enrol/authorizedotnet/classes/enrol_authorizedotnet_paymentprocess.php');
 global $PAGE;
 /**
- * Authorize.net enrolment plugin.
- *
+ *  Plugin functions for the authorizedotnet plugin
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
  * @copyright  2021 DualCube (https://dualcube.com)

@@ -13,6 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Authorize.net enrolment plugin - enrolment form.
+ *
+ * @package    enrol_authorizedotnet
+ * @author     DualCube <admin@dualcube.com>
+ * @copyright  2021 DualCube (https://dualcube.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 
 global $PAGE;
@@ -151,7 +159,7 @@ input[type='number']::-webkit-outer-spin-button {
 
 <?php
 /**
- * Authorize.net enrolment plugin - enrolment form.
+ * Authorize.net enrolment plugin - enrolment form .
  *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
