@@ -24,7 +24,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/enrol/authorizedotnet/classes/enrol_authorizedotnet_paymentprocess.php');
-global $PAGE;
 /**
  *  Plugin functions for the authorizedotnet plugin
  * @package    enrol_authorizedotnet
@@ -38,12 +37,14 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return $currencies
      */
     public function get_currencies() {
-        $codes = array('AUD', 'USD', 'CAD', 'EUR', 'GBP', 'NZD');
-        $currencies = array();
-        foreach ($codes as $c) {
-            $currencies[$c] = new lang_string($c, 'core_currencies');
-        }
-
+        $currencies = array(
+            'AUD' => new lang_string('AUD', 'core_currencies'),
+            'USD' => new lang_string('USD', 'core_currencies'),
+            'CAD' => new lang_string('CAD', 'core_currencies'),
+            'EUR' => new lang_string('EUR', 'core_currencies'),
+            'GBP' => new lang_string('GBP', 'core_currencies'),
+            'NZD' => new lang_string('NZD', 'core_currencies')
+        );
         return $currencies;
     }
     /**
@@ -108,10 +109,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         if ($instance->enrol !== 'authorizedotnet') {
              throw new coding_exception('Invalid enrol instance type!');
         }
-
         $context = context_course::instance($instance->courseid);
-        '<pre>';
-        // print_r(has_capability('enrol/authorizedotnet:config', $context));
         if (has_capability('enrol/authorizedotnet:config', $context)) {
             $managelink = new moodle_url('/enrol/authorizedotnet/edit.php',
                                          array('courseid' => $instance->courseid, 'id' => $instance->id));
@@ -126,21 +124,17 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      */
     public function get_action_icons(stdClass $instance) {
         global $OUTPUT;
-
         if ($instance->enrol !== 'authorizedotnet') {
             throw new coding_exception('invalid enrol instance!');
         }
         $context = context_course::instance($instance->courseid);
-
         $icons = array();
-
         if (has_capability('enrol/authorizedotnet:config', $context)) {
             $editlink = new moodle_url("/enrol/authorizedotnet/edit.php",
                                        array('courseid' => $instance->courseid, 'id' => $instance->id));
             $icons[] = $OUTPUT->action_icon($editlink, new pix_icon('t/edit', get_string('edit'), 'core',
                     array('class' => 'iconsmall')));
         }
-
         return $icons;
     }
 
@@ -151,11 +145,9 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      */
     public function get_newinstance_link($courseid) {
         $context = context_course::instance($courseid, MUST_EXIST);
-
         if (!has_capability('moodle/course:enrolconfig', $context) || !has_capability('enrol/authorizedotnet:config', $context)) {
             return null;
         }
-
         // Multiple instances supported - different cost for different roles.
         return new moodle_url('/enrol/authorizedotnet/edit.php', array('courseid' => $courseid));
     }
@@ -167,7 +159,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return string html text, usually a form in a text box
      */
     public function enrol_page_hook(stdClass $instance) {
-        global $CFG, $USER, $OUTPUT, $PAGE, $DB;
+        global $CFG, $USER, $OUTPUT, $DB;
         ob_start();
 
         if ($DB->record_exists('user_enrolments', array('userid' => $USER->id, 'enrolid' => $instance->id))) {
@@ -177,7 +169,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         if ($instance->enrolstartdate != 0 && $instance->enrolstartdate > time()) {
             return ob_get_clean();
         }
-
         if ($instance->enrolenddate != 0 && $instance->enrolenddate < time()) {
             return ob_get_clean();
         }
@@ -208,7 +199,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
             // No cost, other enrolment methods (instances) should be used.
             echo '<p>'.get_string('nocost', 'enrol_authorizedotnet').'</p>';
         } else {
-
             // Calculate localised and "." cost, make sure we send Authorize.net the same value,
             // please note Authorize.net expects amount with 2 decimal places and "." separator.
             $localisedcost = format_float($cost, 2, true);
@@ -250,7 +240,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
                 $mform->display();
             }
         }
-        return $OUTPUT->box(ob_get_clean()); 
+        return $OUTPUT->box(ob_get_clean());
     }
     /**
      * Restore instance and map settings.

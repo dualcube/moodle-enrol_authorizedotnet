@@ -22,12 +22,10 @@
  * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../config.php');
-defined('MOODLE_INTERNAL') || die();
+require_login();
 $enrolid = required_param('enrolid', PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
-require_login();
 $instance = $DB->get_record('enrol', array('id' => $enrolid, 'enrol' => 'authorizedotnet'), '*', MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $instance->courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
