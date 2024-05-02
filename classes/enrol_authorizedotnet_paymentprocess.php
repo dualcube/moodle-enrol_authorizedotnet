@@ -35,17 +35,18 @@ use net\authorize\api\controller as AnetController;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_authorizedotnet_payment_process {
-    public $user = null;
-    public $course = null;
-    public $context = null;
-    public $plugininstance = null;
-    public $plugin;
-    public $invoice;
-    public $description;
-    public $authmode;
-    public $paymnetenv;
-    public $refid;
-
+    protected $user = null;
+    protected $course = null;
+    protected $context = null;
+    protected $plugininstance = null;
+    protected $plugin;
+    protected $invoice;
+    protected $description;
+    protected $authmode;
+    protected $paymnetenv;
+    protected $refid;
+    protected $formdata;
+    
     /**
      * Process a payment for enrolling a user in a course using Authorize.net.
      * @param object $formdata An array containing form data submitted by the user.
@@ -55,28 +56,27 @@ class enrol_authorizedotnet_payment_process {
      * @return void
      */
     public function process_payment($formdata , $courseid , $userid , $instanceid) {
-        if ($this->invalid_details_check($courseid , $userid , $instanceid) && $this->check_card_information($formdata)) {
+        if ($this->invalid_details_check($courseid , $userid , $instanceid)) {
+            $this->formdata=$formdata;
+            $this->plugin = enrol_get_plugin('authorizedotnet');
             $this->invoice = date('YmdHis');
             $this->description = $this->course->fullname;
             $this->authmode = $this->plugin->get_config('checkproductionmode');
             $this->paymnetenv = $this->authmode == 0 ? 'PRODUCTION' : 'SANDBOX';
             $this->refid = 'REF'.time();
             $merchantauthentication = $this->create_merchant_authentication();
-            $paymentone = $this->create_payment_type_object($formdata);
             $order = $this->create_order();
-            $customerdetails = $this->create_customer_details($formdata);
-            $transactionrequesttype = $this->create_transaction($order , $paymentone , $customerdetails[0] , $customerdetails[1]);
+            $transactionrequesttype = $this->create_transaction($order );
             $response = $this->complete_transaction($merchantauthentication , $transactionrequesttype);
-            $error = $this->generate_error_messsage($response);
-            if (!$error) {
-                $this->process_all_data($response , $formdata);
+            if (!$this->generate_error_messsage($response)) {
+                $this->enrol_user($response);
             }
             
         }
     }
 
     /**
-     * Check details for a payment for enrolling a user in a course using Authorize.net..
+     * Check details of users and details for a payment for enrolling a user in a course using Authorize.net..
      * @param int $courseid The ID of the course in which the user wants to enroll.
      * @param int $userid The ID of the user who is enrolling in the course.
      * @param int $instanceid The ID of the enrollment instance.
@@ -84,7 +84,6 @@ class enrol_authorizedotnet_payment_process {
      */
     public function invalid_details_check($courseid , $userid , $instanceid) {
         global $DB;
-        $this->plugin = enrol_get_plugin('authorizedotnet');
         if (! $this->user = $DB->get_record("user" , array("id" => $userid))) {
             throw new moodle_exception(get_string('invaliduserid' , 'enrol_authorizedotnet'));
         }
@@ -96,27 +95,16 @@ class enrol_authorizedotnet_payment_process {
         }
         if (! $this->plugininstance = $DB->get_record("enrol" , array("id" => $instanceid , "status" => 0))) {
             throw new moodle_exception(get_string('invalidintanceid' , 'enrol_authorizedotnet'));
-        } else {
+        }
+        else {
             return true;
         }
     }
     
 
     /**
-     * check card information for  payment and enrolling a user in a course using Authorize.net.
-     * @param object $formdata An array containing form data submitted by the user.
-     * @return boolean
-     */
-    public function check_card_information($formdata) {
-        if (!empty($formdata->cardnumber) && !empty($formdata->expmonth) && !empty($formdata->expyear) && !empty($formdata->cardcode)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    /**
      * merchant aouthentication for authorize.net for payment and enrolling a user in a course using Authorize.net.
-     * @return object 
+     * @return object
      */
     public function create_merchant_authentication() {
         $merchantauthentication = new AnetAPI\MerchantAuthenticationType();
@@ -129,23 +117,6 @@ class enrol_authorizedotnet_payment_process {
 
 
     /**
-     * create a payment type object for enrolling a user in a course using Authorize.net.
-     * @param object $formdata
-     * @return object
-     */
-    public function create_payment_type_object($formdata) {
-        $cardexpyearmonth = $formdata->expyear . '-' . $formdata->expmonth;
-        $creditcardset = new AnetAPI\CreditCardType();
-        $creditcardset->setCardNumber(preg_replace('/\s+/', '', $formdata->cardnumber));
-        $creditcardset->setExpirationDate($cardexpyearmonth);
-        $creditcardset->setCardCode($formdata->cardcode);
-        $paymentone = new AnetAPI\PaymentType();
-        $paymentone->setCreditCard($creditcardset);
-        return $paymentone;
-    }
-
-
-    /**
      * create order for enrolling a user in a course using Authorize.net.
      * @return object
      **/
@@ -154,36 +125,37 @@ class enrol_authorizedotnet_payment_process {
         $order->setDescription($this->description);
         return $order;
     }
+
+
     /**
-     * create customer address in authorize.net for enrolling a user in a course using Authorize.net.
-     * @param object $formdata An array containing form data submitted by the user.
-     * @return array
+     * create the transaction request for enrolling a user in a course using Authorize.net.
+     * @param object $order instance of the order we created previously
+     * @return object
      */
-    public function create_customer_details($formdata) {
+    public function create_transaction($order ) {
+        // create a credit card type object
+        $cardexpyearmonth = $this->formdata->expyear . '-' . $this->formdata->expmonth;
+        $creditcardset = new AnetAPI\CreditCardType();
+        $creditcardset->setCardNumber(preg_replace('/\s+/', '', $this->formdata->cardnumber));
+        $creditcardset->setExpirationDate($cardexpyearmonth);
+        $creditcardset->setCardCode($this->formdata->cardcode);
+        // creating a payment type object
+        $paymentone = new AnetAPI\PaymentType();
+        $paymentone->setCreditCard($creditcardset);
+        // creating customer datatype object 
         $customerdatatype = new AnetAPI\CustomerDataType();
         $customerdatatype->setType("individual");
         $customerdatatype->setId($this->user->id);
+        // creating customer address type object 
         $customeraddress = new AnetAPI\CustomerAddressType();
-        $customeraddress->setFirstName($formdata->firstname);
-        $customeraddress->setLastName($formdata->lastname);
+        $customeraddress->setFirstName($this->formdata->firstname);
+        $customeraddress->setLastName($this->formdata->lastname);
         $customeraddress->setCompany($this->user->department);
-        $customeraddress->setAddress($formdata->address);
-        $customeraddress->setCity($formdata->city);
-        $customeraddress->setZip($formdata->zip);
-        $customeraddress->setCountry($formdata->country);
-        return array($customerdatatype,$customeraddress);
-    }
-
-
-    /**
-     * create the transaction for enrolling a user in a course using Authorize.net.
-     * @param object $order instance of the order we created previously
-     * @param object $paymentone instance of the object of payment type we created previoulsy
-     * @param object $customeraddress the object of the customer address created previoulsly
-     * @param object $customerdatatype the object of the customer datatype created previously
-     * @return object
-     */
-    public function create_transaction($order , $paymentone , $customerdatatype, $customeraddress) {
+        $customeraddress->setAddress($this->formdata->address);
+        $customeraddress->setCity($this->formdata->city);
+        $customeraddress->setZip($this->formdata->zip);
+        $customeraddress->setCountry($this->formdata->country);
+        //creating transaction request type object 
         $transactionrequesttype = new AnetAPI\TransactionRequestType();
         $transactionrequesttype->setTransactionType("authCaptureTransaction");
         $transactionrequesttype->setAmount($this->plugininstance->cost);
@@ -195,7 +167,8 @@ class enrol_authorizedotnet_payment_process {
     }
 
     /**
-     * create a payment request in authorize.net for enrolling a user in a course using Authorize.net.
+     * create a payment request in authorize.net for enrolling a user in a course using Authorize.net. 
+     * And implement the request and get the response
      * @param object $merchantauthentication  the merchantauthentication object we created previously
      * @param object $transactionrequesttype the transactionrequesttype object we created
      * @return object
@@ -211,7 +184,7 @@ class enrol_authorizedotnet_payment_process {
     }
 
     /**
-     * if the payment  is successfull enrol him to course
+     * check the response and if there is an error show the error.
      * @param object $response the rsponse object we created by executing transaction request
      * @return boolean
      */
@@ -230,11 +203,11 @@ class enrol_authorizedotnet_payment_process {
 
 
     /**
-     * if the payment  is successfull enrol him to course
+     * if the payment  is successfull enrol the user to course
      * @param object $response the rsponse object we created by executing transaction request
      * @return mixed
      */
-    public function process_all_data($response , $formdata) {
+    public function enrol_user($response) {
         global $DB , $CFG , $PAGE;
         $tresponse = $response->getTransactionResponse();
         // Transaction info
@@ -295,12 +268,12 @@ class enrol_authorizedotnet_payment_process {
         $enrolauthorizedotnet->payment_status = 'Approved';
         $enrolauthorizedotnet->card_type = 'card';
         $enrolauthorizedotnet->invoice_num = $this->invoice;
-        $enrolauthorizedotnet->email = $formdata->email;
-        $enrolauthorizedotnet->first_name = $formdata->firstname;
-        $enrolauthorizedotnet->last_name = $formdata->lastname;
-        $enrolauthorizedotnet->country = $formdata->country;
-        $enrolauthorizedotnet->address = $formdata->address;
-        $enrolauthorizedotnet->zip = $formdata->zip;
+        $enrolauthorizedotnet->email = $this->formdata->email;
+        $enrolauthorizedotnet->first_name = $this->formdata->firstname;
+        $enrolauthorizedotnet->last_name = $this->formdata->lastname;
+        $enrolauthorizedotnet->country = $this->formdata->country;
+        $enrolauthorizedotnet->address = $this->formdata->address;
+        $enrolauthorizedotnet->zip = $this->formdata->zip;
         $enrolauthorizedotnet->trans_id = $transactionid;
         $enrolauthorizedotnet->response_code = $paymentresponse;
         $enrolauthorizedotnet->timeupdated = time();
