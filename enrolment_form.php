@@ -21,14 +21,13 @@
  * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
-require_once($CFG->libdir.'/formslib.php');
-?>
 
-<?php
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir.'/formslib.php');
+
 /**
  * Authorize.net enrolment plugin - enrolment form .
- *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
  * @copyright  2021 DualCube (https://dualcube.com)
@@ -37,6 +36,7 @@ require_once($CFG->libdir.'/formslib.php');
 class enrol_authorizedotnet_form extends moodleform {
     protected $instance;
     protected $localisedcost;
+
     // By defaulting $customdata to null, the constructor can still be invoked without providing any custom data.
     /**
      * enrol_authorizedotnet_form class constructor
@@ -63,9 +63,9 @@ class enrol_authorizedotnet_form extends moodleform {
         // Pay Now image.
         $mform->addElement('html', '<div class="authorize-card-img"><img src="' . $CFG->wwwroot . '/enrol/authorizedotnet/pix/paynow.png"></div>');
         // Payment information header.
-        $mform->addElement('html', '<div class="custom_payment_header"><h1>'. get_string('paymentinfo', 'enrol_authorizedotnet').'</h1></div>');
+        $mform->addElement('html', '<div class="authorize-payment-header"><h1>'. get_string('paymentinfo', 'enrol_authorizedotnet').'</h1></div>');
         // Order info.
-        $mform->addElement('html', '<div class="total-order-amount-section"> <h6>'. get_string('orderinfo', 'enrol_authorizedotnet').'</h6><div>'.$instance->currency.''.$localisedcost.'</div> </div>');
+        $mform->addElement('html', '<div class="authorize-total-order-amount-section"> <h6>'. get_string('orderinfo', 'enrol_authorizedotnet').'</h6><div>'.$instance->currency.''.$localisedcost.'</div> </div>');
         // Payment details header.
         $mform->addElement('html', '<div><h6>'.get_string('paymentinfo', 'enrol_authorizedotnet').'</h6></div>');
         // Card number.
@@ -144,7 +144,7 @@ class enrol_authorizedotnet_form extends moodleform {
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         // Submit button.
-        $mform->addElement('submit', 'final-payment-button', get_string('pay', 'enrol_authorizedotnet'));
+        $mform->addElement('submit', 'final-payment-button', get_string('pay', 'enrol_authorizedotnet'),['class'=>'authorize-submit-button']);
         // Addidng default value from db/ user.
         if ( $user) {
             $mform->setDefault('firstname', $user->firstname);

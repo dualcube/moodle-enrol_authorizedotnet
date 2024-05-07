@@ -32,6 +32,7 @@ require_once($CFG->dirroot.'/enrol/authorizedotnet/classes/enrol_authorizedotnet
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_authorizedotnet_plugin extends enrol_plugin {
+
     /**
      * Lists all currencies available for plugin.
      * @return $currencies
@@ -47,6 +48,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         ];
         return $currencies;
     }
+
     /**
      * Returns optional enrolment information icons.
      *
@@ -62,6 +64,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
     public function get_info_icons(array $instances) {
         return [new pix_icon('icon', get_string('pluginname', 'enrol_authorizedotnet'), 'enrol_authorizedotnet')];
     }
+
     /**
      * Lists all protected user roles.
      * @return bool(true or false)
@@ -70,6 +73,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         // Users with role assign cap may tweak the roles later.
         return false;
     }
+
     /**
      * Defines if user can be unenrolled.
      * @param stdClass $instance of the plugin
@@ -79,6 +83,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         // Users with unenrol cap may unenrol other users manually - requires enrol/authorizedotnet:unenrol.
         return true;
     }
+
     /**
      * Defines if user can be managed from admin.
      * @param stdClass $instance of the plugin
@@ -88,6 +93,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         // Users with manage cap may tweak period and status - requires enrol/authorizedotnet:manage.
         return true;
     }
+
     /**
      * Defines if 'enrol me' link will be shown on course page.
      * @param stdClass $instance of the plugin
@@ -96,6 +102,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
     public function show_enrolme_link(stdClass $instance) {
         return ($instance->status == ENROL_INSTANCE_ENABLED);
     }
+
     /**
      * Adds navigation links into course admin block.
      *
@@ -151,6 +158,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         // Multiple instances supported - different cost for different roles.
         return new moodle_url('/enrol/authorizedotnet/edit.php', ['courseid' => $courseid]);
     }
+
     /**
      * Creates course enrol form, checks if form submitted
      * and enrols user if necessary. It can also redirect.
@@ -242,6 +250,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         }
         return $OUTPUT->box(ob_get_clean());
     }
+
     /**
      * Restore instance and map settings.
      *
@@ -271,6 +280,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         }
         $step->set_mapping('enrol', $oldid, $instanceid);
     }
+
     /**
      * Restore user enrolment.
      *
@@ -283,6 +293,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
         $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, $data->status);
     }
+
     /**
      * Gets an array of the user enrolment actions
      *
@@ -308,6 +319,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         }
         return $actions;
     }
+
     /**
      * Set up cron for the plugin (if any).
      *
@@ -316,6 +328,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         $trace = new text_progress_trace();
         $this->process_expirations($trace);
     }
+
     /**
      * Is it possible to delete enrol instance via standard UI?
      *
@@ -326,6 +339,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
         return has_capability('enrol/authorizedotnet:config', $context);
     }
+    
     /**
      * Is it possible to hide/show enrol instance via standard UI?
      *

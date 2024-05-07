@@ -22,10 +22,14 @@
  * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
-require_once( "$CFG->dirroot/enrol/authorizedotnet/authorize-dot-net-sdk-php/autoload.php");
+
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
+
+require_once( "$CFG->dirroot/enrol/authorizedotnet/authorize-dot-net-sdk-php/autoload.php");
+
 /**
  * class to apply payment process
  *
@@ -190,7 +194,6 @@ class enrol_authorizedotnet_payment_process {
      * @return boolean
      */
     public function generate_error_messsage($response) {
-        $error = null;
         if ($response->getTransactionResponse()->getErrors()) {
             $error = $response->getTransactionResponse()->getErrors()[0]->getErrorText();
             echo "<div class ='error_message'>$error</div>";
@@ -209,7 +212,7 @@ class enrol_authorizedotnet_payment_process {
      * @return mixed
      */
     public function enrol_user($response) {
-        global $DB , $CFG , $PAGE;
+        global $DB, $CFG, $PAGE;
         $tresponse = $response->getTransactionResponse();
 
         // Transaction info.
@@ -281,12 +284,11 @@ class enrol_authorizedotnet_payment_process {
         $enrolauthorizedotnet->timeupdated = time();
         /* Inserting value to enrol_authorizedotnet table */
         $DB->insert_record("enrol_authorizedotnet", $enrolauthorizedotnet, false);
+        $timestart = 0;
+        $timeend   = 0;
         if ($this->plugininstance->enrolperiod) {
             $timestart = time();
             $timeend   = $timestart + $this->plugininstance->enrolperiod;
-        } else {
-            $timestart = 0;
-            $timeend   = 0;
         }
         /* Enrol User */
         $this->plugin->enrol_user($this->plugininstance, $this->user->id, $this->plugininstance->roleid, $timestart, $timeend);

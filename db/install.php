@@ -22,6 +22,8 @@
  * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+ 
 /**
  * Sets up installation script.
  * @return void
