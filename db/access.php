@@ -25,34 +25,33 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+$capabilities = [
 
-    'enrol/authorizedotnet:config' => array(
+    'enrol/authorizedotnet:config' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW,
-        ),
-    ),
-    'enrol/authorizedotnet:manage' => array(
+        ],
+    ],
+    'enrol/authorizedotnet:manage' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-        ),
-    ),
-    'enrol/authorizedotnet:unenrol' => array(
+        ],
+    ],
+    'enrol/authorizedotnet:unenrol' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW,
-        ),
-    ),
-    'enrol/authorizedotnet:unenrolself' => array(
+        ],
+    ],
+    'enrol/authorizedotnet:unenrolself' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-        ),
-    ),
-);
+        'archetypes' => [],
+    ],
+];

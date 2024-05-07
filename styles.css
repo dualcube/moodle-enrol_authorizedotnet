@@ -1,0 +1,42 @@
+*{
+    box-sizing: border-box;
+}
+
+.authorize-imgwrap{
+    width: 250px;
+    margin-bottom: 30px;
+}
+.authorize-imgwrap img{
+    width: 100%;
+}
+
+#id_payment-header{
+    margin-top: 30px;
+}
+
+.custom_payment_header{
+    margin: 1.5rem 0;
+}
+.custom_payment_header h1{
+    font-size: 0.875rem;
+}
+
+.total-order-amount-section{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 20px;
+}
+.total-order-amount-section h6{
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+.total-order-amount-section div{
+    font-size: 1rem;
+    margin-left: 60px;
+}
+
+.btn-primary.btn{
+    width: 210px;
+}

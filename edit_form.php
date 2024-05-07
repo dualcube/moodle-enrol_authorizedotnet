@@ -15,17 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Authorize.net enrolment plugin version specification.
- *
- * @package    enrol_authorizedotnet
- * @author     DualCube <admin@dualcube.com>
- * @copyright  2021 DualCube (https://dualcube.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir.'/formslib.php');
-/**
  * Adds new instance of enrol_authorizedotnet to specified course or edits current instance.
  *
  * @package    enrol_authorizedotnet
@@ -39,8 +28,6 @@ class enrol_authorizedotnet_edit_form extends moodleform {
      * @return void
      */
     public function definition() {
-        global $CFG;
-
         $mform = $this->_form;
 
         list($instance, $plugin, $context) = $this->_customdata;
@@ -48,11 +35,11 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         $mform->addElement('header', 'header', get_string('pluginname', 'enrol_authorizedotnet'));
         $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
         $mform->setType('name', PARAM_TEXT);
-        $options = array(ENROL_INSTANCE_ENABLED  => get_string('yes'),
-                         ENROL_INSTANCE_DISABLED => get_string('no'));
+        $options = [ENROL_INSTANCE_ENABLED  => get_string('yes'),
+                         ENROL_INSTANCE_DISABLED => get_string('no')];
         $mform->addElement('select', 'status', get_string('status', 'enrol_authorizedotnet'), $options);
         $mform->setDefault('status', $plugin->get_config('status'));
-        $mform->addElement('text', 'cost', get_string('cost', 'enrol_authorizedotnet'), array('size' => 4));
+        $mform->addElement('text', 'cost', get_string('cost', 'enrol_authorizedotnet'), ['size' => 4]);
         $mform->setType('cost', PARAM_RAW); // Use unformat_float to get real value.
         $mform->setDefault('cost', format_float($plugin->get_config('cost'), 2, true));
 
@@ -69,17 +56,17 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         $mform->setDefault('roleid', $plugin->get_config('roleid'));
 
         $mform->addElement('duration', 'enrolperiod', get_string('enrolperiod', 'enrol_authorizedotnet'),
-                           array('optional' => true, 'defaultunit' => 86400));
+                           ['optional' => true, 'defaultunit' => 86400]);
         $mform->setDefault('enrolperiod', $plugin->get_config('enrolperiod'));
         $mform->addHelpButton('enrolperiod', 'enrolperiod', 'enrol_authorizedotnet');
 
         $mform->addElement('date_time_selector', 'enrolstartdate', get_string('enrolstartdate', 'enrol_authorizedotnet'),
-                           array('optional' => true));
+                           ['optional' => true]);
         $mform->setDefault('enrolstartdate', 0);
         $mform->addHelpButton('enrolstartdate', 'enrolstartdate', 'enrol_authorizedotnet');
 
         $mform->addElement('date_time_selector', 'enrolenddate', get_string('enrolenddate', 'enrol_authorizedotnet'),
-                           array('optional' => true));
+                           ['optional' => true]);
         $mform->setDefault('enrolenddate', 0);
         $mform->addHelpButton('enrolenddate', 'enrolenddate', 'enrol_authorizedotnet');
 
@@ -89,13 +76,10 @@ class enrol_authorizedotnet_edit_form extends moodleform {
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);
 
-        if ($CFG->version >= '2013111801') {
-            if (enrol_accessing_via_instance($instance)) {
-                $mform->addElement('static', 'selfwarn', get_string('instanceeditselfwarning', 'core_enrol'),
-                                   get_string('instanceeditselfwarningtext', 'core_enrol'));
-            }
+        if (enrol_accessing_via_instance($instance)) {
+            $mform->addElement('static', 'selfwarn', get_string('instanceeditselfwarning', 'core_enrol'),
+                                get_string('instanceeditselfwarningtext', 'core_enrol'));
         }
-
         $this->add_action_buttons(true, ($instance->id ? null : get_string('addinstance', 'enrol')));
 
         $this->set_data($instance);
@@ -107,7 +91,6 @@ class enrol_authorizedotnet_edit_form extends moodleform {
      * @return $error error list
      */
     public function validation($data, $files) {
-        global $DB, $CFG;
         $errors = parent::validation($data, $files);
 
         list($instance, $plugin, $context) = $this->_customdata;

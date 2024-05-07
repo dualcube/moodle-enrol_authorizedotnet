@@ -46,7 +46,6 @@ class enrol_authorizedotnet_payment_process {
     protected $paymnetenv;
     protected $refid;
     protected $formdata;
-    
     /**
      * Process a payment for enrolling a user in a course using Authorize.net.
      * @param object $formdata An array containing form data submitted by the user.
@@ -57,7 +56,7 @@ class enrol_authorizedotnet_payment_process {
      */
     public function process_payment($formdata , $courseid , $userid , $instanceid) {
         if ($this->invalid_details_check($courseid , $userid , $instanceid)) {
-            $this->formdata=$formdata;
+            $this->formdata = $formdata;
             $this->plugin = enrol_get_plugin('authorizedotnet');
             $this->invoice = date('YmdHis');
             $this->description = $this->course->fullname;
@@ -71,7 +70,6 @@ class enrol_authorizedotnet_payment_process {
             if (!$this->generate_error_messsage($response)) {
                 $this->enrol_user($response);
             }
-            
         }
     }
 
@@ -84,23 +82,21 @@ class enrol_authorizedotnet_payment_process {
      */
     public function invalid_details_check($courseid , $userid , $instanceid) {
         global $DB;
-        if (! $this->user = $DB->get_record("user" , array("id" => $userid))) {
+        if (! $this->user = $DB->get_record("user" , ["id" => $userid])) {
             throw new moodle_exception(get_string('invaliduserid' , 'enrol_authorizedotnet'));
         }
-        if (! $this->course = $DB->get_record("course" , array("id" => $courseid))) {
+        if (! $this->course = $DB->get_record("course" , ["id" => $courseid])) {
             throw new moodle_exception(get_string('invalidcourseid' , 'enrol_authorizedotnet'));
         }
         if (! $this->context = context_course::instance($courseid , IGNORE_MISSING)) {
             throw new moodle_exception(get_string('invalidcontextid' , 'enrol_authorizedotnet'));
         }
-        if (! $this->plugininstance = $DB->get_record("enrol" , array("id" => $instanceid , "status" => 0))) {
+        if (! $this->plugininstance = $DB->get_record("enrol" , ["id" => $instanceid , "status" => 0])) {
             throw new moodle_exception(get_string('invalidintanceid' , 'enrol_authorizedotnet'));
-        }
-        else {
+        } else {
             return true;
         }
     }
-    
 
     /**
      * merchant aouthentication for authorize.net for payment and enrolling a user in a course using Authorize.net.
@@ -133,20 +129,24 @@ class enrol_authorizedotnet_payment_process {
      * @return object
      */
     public function create_transaction($order ) {
-        // create a credit card type object
+
+        // Create a credit card type object.
         $cardexpyearmonth = $this->formdata->expyear . '-' . $this->formdata->expmonth;
         $creditcardset = new AnetAPI\CreditCardType();
         $creditcardset->setCardNumber(preg_replace('/\s+/', '', $this->formdata->cardnumber));
         $creditcardset->setExpirationDate($cardexpyearmonth);
         $creditcardset->setCardCode($this->formdata->cardcode);
-        // creating a payment type object
+
+        // Creating a payment type object.
         $paymentone = new AnetAPI\PaymentType();
         $paymentone->setCreditCard($creditcardset);
-        // creating customer datatype object 
+
+        // Creating customer datatype object.
         $customerdatatype = new AnetAPI\CustomerDataType();
         $customerdatatype->setType("individual");
         $customerdatatype->setId($this->user->id);
-        // creating customer address type object 
+
+        // Creating customer address type object.
         $customeraddress = new AnetAPI\CustomerAddressType();
         $customeraddress->setFirstName($this->formdata->firstname);
         $customeraddress->setLastName($this->formdata->lastname);
@@ -155,7 +155,8 @@ class enrol_authorizedotnet_payment_process {
         $customeraddress->setCity($this->formdata->city);
         $customeraddress->setZip($this->formdata->zip);
         $customeraddress->setCountry($this->formdata->country);
-        //creating transaction request type object 
+        
+        // Creating transaction request type object.
         $transactionrequesttype = new AnetAPI\TransactionRequestType();
         $transactionrequesttype->setTransactionType("authCaptureTransaction");
         $transactionrequesttype->setAmount($this->plugininstance->cost);
@@ -167,7 +168,7 @@ class enrol_authorizedotnet_payment_process {
     }
 
     /**
-     * create a payment request in authorize.net for enrolling a user in a course using Authorize.net. 
+     * create a payment request in authorize.net for enrolling a user in a course using Authorize.net.
      * And implement the request and get the response
      * @param object $merchantauthentication  the merchantauthentication object we created previously
      * @param object $transactionrequesttype the transactionrequesttype object we created
@@ -210,7 +211,8 @@ class enrol_authorizedotnet_payment_process {
     public function enrol_user($response) {
         global $DB , $CFG , $PAGE;
         $tresponse = $response->getTransactionResponse();
-        // Transaction info
+
+        // Transaction info.
         $transactionid = $tresponse->getTransId();
         $paymentresponse = $tresponse->getResponseCode();
         $PAGE->set_context($this->context);
@@ -225,9 +227,9 @@ class enrol_authorizedotnet_payment_process {
         $mailstudents = $this->plugin->get_config('mailstudents');
         $mailteachers = $this->plugin->get_config('mailteachers');
         $mailadmins   = $this->plugin->get_config('mailadmins');
-        $shortname = format_string($this->course->shortname, true, array('context' => $this->context));
+        $shortname = format_string($this->course->shortname, true, ['context' => $this->context]);
         $userdetails = new stdClass();
-        $userdetails->course = format_string($this->course->fullname, true, array('context' => $coursecontext));
+        $userdetails->course = format_string($this->course->fullname, true, ['context' => $coursecontext]);
         $userdetails->user = fullname($this->user);
         $thisuser = $this->user;
         $userdetails->profileurl = "$CFG->wwwroot/user/view.php?id=$thisuser->id";
@@ -241,7 +243,7 @@ class enrol_authorizedotnet_payment_process {
         if (!empty($mailstudents)) {
             $eventdata->userfrom          = empty($teacher) ? core_user::get_noreply_user() : $teacher;
             $eventdata->userto            = $this->user;
-            $eventdata->fullmessage       = get_string('welcometocoursetext', '', $userdetails); 
+            $eventdata->fullmessage       = get_string('welcometocoursetext', '', $userdetails);
             message_send($eventdata);
         }
         if (!empty($mailteachers) && !empty($teacher)) {
