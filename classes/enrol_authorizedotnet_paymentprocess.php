@@ -115,7 +115,6 @@ class enrol_authorizedotnet_payment_process {
         return $merchantauthentication;
     }
 
-
     /**
      * create order for enrolling a user in a course using Authorize.net.
      * @return object
@@ -125,7 +124,6 @@ class enrol_authorizedotnet_payment_process {
         $order->setDescription($this->description);
         return $order;
     }
-
 
     /**
      * create the transaction request for enrolling a user in a course using Authorize.net.

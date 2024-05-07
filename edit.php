@@ -95,7 +95,6 @@ if ($mform->is_cancelled()) {
                     ];
         $plugin->add_instance($course, $fields);
     }
-
     redirect($return);
 }
 

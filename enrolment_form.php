@@ -48,6 +48,7 @@ class enrol_authorizedotnet_form extends moodleform {
         $this->localisedcost = isset($customdata['localisedcost']) ? $customdata['localisedcost'] : null;
         parent::__construct($action);
     }
+
     /**
      * defination of form
      */
@@ -157,6 +158,7 @@ class enrol_authorizedotnet_form extends moodleform {
             $mform->setDefault('id', $instance->courseid);
         }
     }
+    
     /**
      *  Custom validation should be added here.
      */

@@ -24,7 +24,7 @@
  */
 
  defined('MOODLE_INTERNAL') || die();
- 
+
  require_once($CFG->libdir.'/formslib.php');
 
  /**
@@ -35,6 +35,7 @@
   * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
   */
 class enrol_authorizedotnet_edit_form extends moodleform {
+
     /**
      * Sets up moodle form.
      * @return void
@@ -96,6 +97,7 @@ class enrol_authorizedotnet_edit_form extends moodleform {
 
         $this->set_data($instance);
     }
+    
     /**
      * Sets up moodle form validation.
      * @param stdClass $data
