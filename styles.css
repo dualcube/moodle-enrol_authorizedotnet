@@ -1,0 +1,44 @@
+
+.authorize-imgwrap{
+    width: 250px;
+    margin-bottom: 30px;
+}
+.authorize-imgwrap img{
+    width: 100%;
+}
+
+.authorize-payment-header{
+    margin: 1.5rem 0;
+}
+.authorize-payment-header h1{
+    font-size: 0.875rem;
+}
+
+.authorize-total-order-amount-section{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 20px;
+}
+.authorize-total-order-amount-section h6{
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+.authorize-total-order-amount-section div{
+    font-size: 1rem;
+    margin-left: 60px;
+}
+
+input.authorize-submit-button{
+    width: 210px;
+
+}
+
+.authorize_error_message{
+  padding: .75rem;
+  background: #ff000017;
+  color: red;
+  margin-bottom: 1rem;
+  border-radius: .25rem;
+}

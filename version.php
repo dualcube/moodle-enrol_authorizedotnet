@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023101000;
-$plugin->requires  = 2015111600;
+$plugin->version   = 2024050800;
+$plugin->requires  = 2022041900;// Require Moodle version 4.0.
 $plugin->component = 'enrol_authorizedotnet';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.6.4 (Build: 2023101000)';
+$plugin->release   = '2.6.5 (Build: 2024050800)';
 $plugin->cron      = 60;

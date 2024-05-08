@@ -34,11 +34,8 @@ if ($ADMIN->fulltree) {
                    get_string('loginid', 'enrol_authorizedotnet'), get_string('loginid_description', 'enrol_authorizedotnet'), '', PARAM_RAW));
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/transactionkey',
                    get_string('transactionkey', 'enrol_authorizedotnet'), get_string('transactionkey_description', 'enrol_authorizedotnet'), '', PARAM_RAW));
-  
     $settings->add(new admin_setting_configtext('enrol_authorizedotnet/clientkey',
                    get_string('clientkey', 'enrol_authorizedotnet'), get_string('clientkey_descrition', 'enrol_authorizedotnet'), '', PARAM_RAW));
-    
-    
     $settings->add(new admin_setting_configcheckbox('enrol_authorizedotnet/checkproductionmode',
                    get_string('checkproductionmode', 'enrol_authorizedotnet'), '', 0));
     $settings->add(new admin_setting_configcheckbox('enrol_authorizedotnet/mailstudents',
@@ -49,12 +46,12 @@ if ($ADMIN->fulltree) {
                    get_string('mailadmins', 'enrol_authorizedotnet'), '', 0));
 
     // Note: let's reuse the ext sync constants and strings here, internally it is very similar,
-    //       it describes what should happen when users are not supposed to be enrolled any more.
-    $options = array(
+    // it describes what should happen when users are not supposed to be enrolled any more.
+    $options = [
         ENROL_EXT_REMOVED_KEEP           => get_string('extremovedkeep', 'enrol'),
         ENROL_EXT_REMOVED_SUSPENDNOROLES => get_string('extremovedsuspendnoroles', 'enrol'),
         ENROL_EXT_REMOVED_UNENROL        => get_string('extremovedunenrol', 'enrol'),
-    );
+    ];
     $settings->add(new admin_setting_configselect('enrol_authorizedotnet/expiredaction',
                    get_string('expiredaction', 'enrol_authorizedotnet'),
                    get_string('expiredaction_help', 'enrol_authorizedotnet'), ENROL_EXT_REMOVED_SUSPENDNOROLES, $options));
@@ -66,8 +63,8 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('enrol_authorizedotnet_defaults',
         get_string('enrolinstancedefaults', 'admin'), get_string('enrolinstancedefaults_desc', 'admin')));
 
-    $options = array(ENROL_INSTANCE_ENABLED  => get_string('yes'),
-                     ENROL_INSTANCE_DISABLED => get_string('no'));
+    $options = [ENROL_INSTANCE_ENABLED  => get_string('yes'),
+                     ENROL_INSTANCE_DISABLED => get_string('no')];
     $settings->add(new admin_setting_configselect('enrol_authorizedotnet/status',
                    get_string('status', 'enrol_authorizedotnet'),
                    get_string('status_desc', 'enrol_authorizedotnet'), ENROL_INSTANCE_DISABLED, $options));
