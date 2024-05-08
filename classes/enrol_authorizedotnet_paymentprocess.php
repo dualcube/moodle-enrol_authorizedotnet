@@ -163,7 +163,7 @@ class enrol_authorizedotnet_payment_process {
      */
     public function generate_error_messsage($response) {
         if ($response->getTransactionResponse()->getErrors() || $response == null) {
-           if ($response->getTransactionResponse()->getErrors()[0]->getErrorText() && $response != null)
+           if ($response != null && $response->getTransactionResponse()->getErrors()[0]->getErrorText())
             echo "<div class='authorize_error_message'>" . $response->getTransactionResponse()->getErrors()[0]->getErrorText() . "</div>";
            return 1;
         }
