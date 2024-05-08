@@ -22,8 +22,11 @@
  * @copyright  2021 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/enrol/authorizedotnet/classes/enrol_authorizedotnet_paymentprocess.php');
+
 /**
  *  Plugin functions for the authorizedotnet plugin
  * @package    enrol_authorizedotnet
@@ -118,8 +121,13 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         }
         $context = context_course::instance($instance->courseid);
         if (has_capability('enrol/authorizedotnet:config', $context)) {
-            $managelink = new moodle_url('/enrol/authorizedotnet/edit.php',
-                                         ['courseid' => $instance->courseid, 'id' => $instance->id]);
+            $managelink = new moodle_url(
+                '/enrol/authorizedotnet/edit.php',
+                [
+                    'courseid' => $instance->courseid,
+                    'id' => $instance->id
+                ]
+            );
             $instancesnode->add($this->get_instance_name($instance), $managelink, navigation_node::TYPE_SETTING);
         }
     }
@@ -137,10 +145,18 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
         $icons = [];
         if (has_capability('enrol/authorizedotnet:config', $context)) {
-            $editlink = new moodle_url("/enrol/authorizedotnet/edit.php",
-                                       ['courseid' => $instance->courseid, 'id' => $instance->id]);
+            $editlink = new moodle_url(
+                "/enrol/authorizedotnet/edit.php",
+                [
+                    'courseid' => $instance->courseid, 'id' => $instance->id
+                ]
+            );
             $icons[] = $OUTPUT->action_icon($editlink, new pix_icon('t/edit', get_string('edit'), 'core',
-                    ['class' => 'iconsmall']));
+                    [
+                        'class' => 'iconsmall'
+                    ]
+                )
+            );
         }
         return $icons;
     }
@@ -183,24 +199,27 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
 
         $course = $DB->get_record('course', ['id' => $instance->courseid]);
         $context = context_course::instance($course->id);
-
-        $shortname = format_string($course->shortname, true, ['context' => $context]);
-        $strloginto = get_string("loginto", "", $shortname);
-        $strcourses = get_string("courses");
-
+        $teacher = false;
+        $cost = (float) $instance->cost;
         // Pass $view=true to filter hidden caps if the user cannot see them.
-        if ($users = get_users_by_capability($context, 'moodle/course:update', 'u.*', 'u.id ASC',
-                                             '', '', '', '', false, true)) {
+        if ($users = get_users_by_capability(
+            $context,
+            'moodle/course:update',
+            'u.*',
+            'u.id ASC',
+            '',
+            '',
+            '',
+            '',
+            false,
+            true
+        )) {
             $users = sort_by_roleassignment_authority($users, $context);
             $teacher = array_shift($users);
-        } else {
-            $teacher = false;
         }
 
         if ( (float) $instance->cost <= 0 ) {
             $cost = (float) $this->get_config('cost');
-        } else {
-            $cost = (float) $instance->cost;
         }
 
         if (abs($cost) < 0.01) {
@@ -226,16 +245,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
                 echo '<p><a href="'.$wwwroot.'/login/">'.get_string('loginsite').'</a></p>';
                 echo '</div>';
             } else {
-                // Sanitise some fields before building the payment form.
-                $coursefullname  = format_string($course->fullname, true, ['context' => $context]);
-                $courseshortname = $shortname;
-                $userfullname    = fullname($USER);
-                $userfirstname   = $USER->firstname;
-                $userlastname    = $USER->lastname;
-                $useraddress     = $USER->address;
-                $usercity        = $USER->city;
-                $instancename    = $this->get_instance_name($instance);
-
                 include_once($CFG->dirroot.'/enrol/authorizedotnet/enrolment_form.php');
                 $mform = new enrol_authorizedotnet_form(null, ['instance' => $instance, 'localisedcost' => $localisedcost]);
                 // If we want to pass a object through constructor we cant pass it directly.
@@ -275,9 +284,8 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         if ($merge && $instances = $DB->get_records('enrol', $merge, 'id')) {
             $instance = reset($instances);
             $instanceid = $instance->id;
-        } else {
-            $instanceid = $this->add_instance($course, (array)$data);
         }
+        $instanceid = $this->add_instance($course, (array)$data);
         $step->set_mapping('enrol', $oldid, $instanceid);
     }
 
@@ -339,7 +347,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
         return has_capability('enrol/authorizedotnet:config', $context);
     }
-    
+
     /**
      * Is it possible to hide/show enrol instance via standard UI?
      *
