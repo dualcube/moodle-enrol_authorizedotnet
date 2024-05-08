@@ -1,7 +1,7 @@
 Moodle Authorize.net Plugin [enrol_authorizedotnet]
 =======================
 * Developed by: Team DualCube
-* Copyright: (c) 2021 DualCube<admin@dulacube.com>
+* Copyright: (c) 2021 DualCube <admin@dualcube.com>
 * License: [GNU GENERAL PUBLIC LICENSE](LICENSE)
 * Contributors:  DualCube
 
@@ -35,7 +35,7 @@ Installation
 
 Requirements
 ------------
-* Moodle 3.0 - 4.1+
+* Moodle 4.1+
 * Authorize.net account
 
 

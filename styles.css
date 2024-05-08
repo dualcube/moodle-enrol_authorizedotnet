@@ -34,3 +34,11 @@ input.authorize-submit-button{
     width: 210px;
 
 }
+
+.authorize_error_message{
+  padding: .75rem;
+  background: #ff000017;
+  color: red;
+  margin-bottom: 1rem;
+  border-radius: .25rem;
+}

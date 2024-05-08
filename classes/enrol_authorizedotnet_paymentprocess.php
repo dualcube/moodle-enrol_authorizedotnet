@@ -50,87 +50,65 @@ class enrol_authorizedotnet_payment_process {
     protected $paymnetenv;
     protected $refid;
     protected $formdata;
+
     /**
-     * Process a payment for enrolling a user in a course using Authorize.net.
-     * @param object $formdata An array containing form data submitted by the user.
-     * @param int $courseid The ID of the course in which the user wants to enroll.
-     * @param int $userid The ID of the user who is enrolling in the course.
-     * @param int $instanceid The ID of the enrollment instance.
-     * @return void
+     * constructor set the local variable
+     * @param stdclass $formdata An array containing form data submitted by the user.
+     * @param int $courseid The id of the course in which the user wants to enroll.
+     * @param int $userid  The id of the user who is enrolling in the course.
+     *  @param int $instanceid The ID of the enrollment instance.
      */
-    public function process_payment($formdata , $courseid , $userid , $instanceid) {
-        if ($this->invalid_details_check($courseid , $userid , $instanceid)) {
-            $this->formdata = $formdata;
-            $this->plugin = enrol_get_plugin('authorizedotnet');
-            $this->invoice = date('YmdHis');
-            $this->description = $this->course->fullname;
-            $this->authmode = $this->plugin->get_config('checkproductionmode');
-            $this->paymnetenv = $this->authmode == 0 ? 'PRODUCTION' : 'SANDBOX';
-            $this->refid = 'REF'.time();
-            $merchantauthentication = $this->create_merchant_authentication();
-            $order = $this->create_order();
-            $transactionrequesttype = $this->create_transaction($order );
-            $response = $this->complete_transaction($merchantauthentication , $transactionrequesttype);
+    function __construct($formdata , $courseid , $userid , $instanceid){
+        global $DB;
+        $this->user = $DB->get_record("user", ["id" => $userid]);
+        $this->course = $DB->get_record("course", ["id" => $courseid]);
+        $this->context = context_course::instance($courseid, IGNORE_MISSING);
+        $this->plugininstance = $DB->get_record("enrol", ["id" => $instanceid, "status" => 0]);
+        $this->formdata = $formdata;
+        $this->plugin = enrol_get_plugin('authorizedotnet');
+        $this->invoice = date('YmdHis');
+        $this->description = $this->course->fullname;
+        $this->authmode = $this->plugin->get_config('checkproductionmode');
+        $this->paymnetenv = $this->authmode == 0 ? 'PRODUCTION' : 'SANDBOX';
+        $this->refid = 'REF'.time();
+
+    }
+
+    /**
+     * all processes for enoroling a user is calledfrom here
+     */
+    public function process_enrolment() {
+        if ($this->user != null && $this->course != null && $this->context != null && $this->plugininstance) {
+            $response = $this->authorize_payment_process();
             if (!$this->generate_error_messsage($response)) {
                 $this->enrol_user($response);
             }
-        }
-    }
-
-    /**
-     * Check details of users and details for a payment for enrolling a user in a course using Authorize.net..
-     * @param int $courseid The ID of the course in which the user wants to enroll.
-     * @param int $userid The ID of the user who is enrolling in the course.
-     * @param int $instanceid The ID of the enrollment instance.
-     * @return boolean
-     */
-    public function invalid_details_check($courseid , $userid , $instanceid) {
-        global $DB;
-        if (! $this->user = $DB->get_record("user" , ["id" => $userid])) {
-            throw new moodle_exception(get_string('invaliduserid' , 'enrol_authorizedotnet'));
-        }
-        if (! $this->course = $DB->get_record("course" , ["id" => $courseid])) {
-            throw new moodle_exception(get_string('invalidcourseid' , 'enrol_authorizedotnet'));
-        }
-        if (! $this->context = context_course::instance($courseid , IGNORE_MISSING)) {
-            throw new moodle_exception(get_string('invalidcontextid' , 'enrol_authorizedotnet'));
-        }
-        if (! $this->plugininstance = $DB->get_record("enrol" , ["id" => $instanceid , "status" => 0])) {
-            throw new moodle_exception(get_string('invalidintanceid' , 'enrol_authorizedotnet'));
+        } else if ($this->user==null) {
+            throw new moodle_exception(get_string('invaliduserid', 'enrol_authorizedotnet'));
+        } else if ($this->course==null) {
+            throw new moodle_exception(get_string('invalidcourseid', 'enrol_authorizedotnet'));
+        } else if ($this->context==null) {
+            throw new moodle_exception(get_string('invalidcontextid', 'enrol_authorizedotnet'));
         } else {
-            return true;
+            throw new moodle_exception(get_string('invalidintanceid', 'enrol_authorizedotnet'));
         }
     }
 
     /**
-     * merchant aouthentication for authorize.net for payment and enrolling a user in a course using Authorize.net.
-     * @return object
+     * complete payment process for authorize.net 
      */
-    public function create_merchant_authentication() {
+    public function authorize_payment_process() {
+
+        // Merchant aouthentication for authorize.net for payment and enrolling a user in a course using Authorize.net.
         $merchantauthentication = new AnetAPI\MerchantAuthenticationType();
         $loginid = $this->plugin->get_config('loginid');
         $merchantauthentication->setName($loginid);
         $transactionkey = $this->plugin->get_config('transactionkey');
         $merchantauthentication->setTransactionKey($transactionkey);
-        return $merchantauthentication;
-    }
 
-    /**
-     * create order for enrolling a user in a course using Authorize.net.
-     * @return object
-     **/
-    public function create_order() {
+        // Create order for enrolling a user in a course using Authorize.net.
         $order = new AnetAPI\OrderType();
         $order->setDescription($this->description);
-        return $order;
-    }
-
-    /**
-     * create the transaction request for enrolling a user in a course using Authorize.net.
-     * @param object $order instance of the order we created previously
-     * @return object
-     */
-    public function create_transaction($order ) {
 
         // Create a credit card type object.
         $cardexpyearmonth = $this->formdata->expyear . '-' . $this->formdata->expmonth;
@@ -166,17 +144,9 @@ class enrol_authorizedotnet_payment_process {
         $transactionrequesttype->setPayment($paymentone);
         $transactionrequesttype->setBillTo($customeraddress);
         $transactionrequesttype->setCustomer($customerdatatype);
-        return $transactionrequesttype;
-    }
 
-    /**
-     * create a payment request in authorize.net for enrolling a user in a course using Authorize.net.
-     * And implement the request and get the response
-     * @param object $merchantauthentication  the merchantauthentication object we created previously
-     * @param object $transactionrequesttype the transactionrequesttype object we created
-     * @return object
-     */
-    public function complete_transaction($merchantauthentication , $transactionrequesttype) {
+        // Create a payment request in authorize.net for enrolling a user in a course using Authorize.net
+        // And implement the request and get the response
         $request = new AnetAPI\CreateTransactionRequest();
         $request->setMerchantAuthentication($merchantauthentication);
         $request->setRefId($this->refid);
@@ -184,6 +154,7 @@ class enrol_authorizedotnet_payment_process {
         $controller = new AnetController\CreateTransactionController($request);
         $response = $controller->executeWithApiResponse(constant("\\net\authorize\api\constants\ANetEnvironment::$this->paymnetenv"));
         return $response;
+
     }
 
     /**
@@ -194,7 +165,7 @@ class enrol_authorizedotnet_payment_process {
     public function generate_error_messsage($response) {
         if ($response->getTransactionResponse()->getErrors()) {
             $error = $response->getTransactionResponse()->getErrors()[0]->getErrorText();
-            echo "<div class ='error_message'>$error</div>";
+            echo "<div class ='authorize_error_message'>$error</div>";
             return 1;
         }
         if ($response == null) {

@@ -250,8 +250,8 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
                 // If we want to pass a object through constructor we cant pass it directly.
                 if ($data = $mform->get_data()) {
                     if (confirm_sesskey()) {
-                        $paymentprocess = new \enrol_authorizedotnet_payment_process();
-                        $paymentprocess->process_payment($data, $instance->courseid, $USER->id, $instance->id);
+                        $paymentprocess = new \enrol_authorizedotnet_payment_process($data, $instance->courseid, $USER->id, $instance->id);
+                        $paymentprocess->process_enrolment();
                     }
                 }
                 $mform->display();
@@ -270,20 +270,22 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      */
     public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
         global $DB;
-        if ($step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
-            $merge = false;
-        } else {
-            $merge = [
-                'courseid'   => $data->courseid,
-                'enrol'      => $this->get_name(),
-                'roleid'     => $data->roleid,
-                'cost'       => $data->cost,
-                'currency'   => $data->currency,
-            ];
-        }
-        if ($merge && $instances = $DB->get_records('enrol', $merge, 'id')) {
-            $instance = reset($instances);
-            $instanceid = $instance->id;
+        if (!$step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
+            if($instances=$DB->get_records(
+                    'enrol',
+                    [
+                        'courseid'   => $data->courseid,
+                        'enrol'      => $this->get_name(),
+                        'roleid'     => $data->roleid,
+                        'cost'       => $data->cost,
+                        'currency'   => $data->currency,
+                    ],
+                    'id'
+                )
+            ){
+                $instance = reset($instances);
+                $instanceid = $instance->id;
+            }
         }
         $instanceid = $this->add_instance($course, (array)$data);
         $step->set_mapping('enrol', $oldid, $instanceid);
