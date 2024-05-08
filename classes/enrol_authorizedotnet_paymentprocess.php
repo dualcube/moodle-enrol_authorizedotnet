@@ -98,7 +98,6 @@ class enrol_authorizedotnet_payment_process {
      * complete payment process for authorize.net 
      */
     public function authorize_payment_process() {
-
         // Merchant aouthentication for authorize.net for payment and enrolling a user in a course using Authorize.net.
         $merchantauthentication = new AnetAPI\MerchantAuthenticationType();
         $loginid = $this->plugin->get_config('loginid');
@@ -118,8 +117,8 @@ class enrol_authorizedotnet_payment_process {
         $creditcardset->setCardCode($this->formdata->cardcode);
 
         // Creating a payment type object.
-        $paymentone = new AnetAPI\PaymentType();
-        $paymentone->setCreditCard($creditcardset);
+        $paymenttype = new AnetAPI\PaymentType();
+        $paymenttype->setCreditCard($creditcardset);
 
         // Creating customer datatype object.
         $customerdatatype = new AnetAPI\CustomerDataType();
@@ -141,7 +140,7 @@ class enrol_authorizedotnet_payment_process {
         $transactionrequesttype->setTransactionType("authCaptureTransaction");
         $transactionrequesttype->setAmount($this->plugininstance->cost);
         $transactionrequesttype->setOrder($order);
-        $transactionrequesttype->setPayment($paymentone);
+        $transactionrequesttype->setPayment($paymenttype);
         $transactionrequesttype->setBillTo($customeraddress);
         $transactionrequesttype->setCustomer($customerdatatype);
 
@@ -163,17 +162,13 @@ class enrol_authorizedotnet_payment_process {
      * @return boolean
      */
     public function generate_error_messsage($response) {
-        if ($response->getTransactionResponse()->getErrors()) {
-            $error = $response->getTransactionResponse()->getErrors()[0]->getErrorText();
-            echo "<div class ='authorize_error_message'>$error</div>";
-            return 1;
-        }
-        if ($response == null) {
-            return 1;
+        if ($response->getTransactionResponse()->getErrors() || $response == null) {
+           if ($response->getTransactionResponse()->getErrors()[0]->getErrorText() && $response != null)
+            echo "<div class='authorize_error_message'>" . $response->getTransactionResponse()->getErrors()[0]->getErrorText() . "</div>";
+           return 1;
         }
         return 0;
     }
-
 
     /**
      * if the payment  is successfull enrol the user to course
