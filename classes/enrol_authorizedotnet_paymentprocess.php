@@ -124,7 +124,7 @@ class enrol_authorizedotnet_payment_process {
         $customerdatatype = new AnetAPI\CustomerDataType();
         $customerdatatype->setType("individual");
         $customerdatatype->setId($this->user->id);
-        $customerdatatype->setEmail($this->user->id);
+        $customerdatatype->setEmail($this->user->email);
 
         // Creating customer address type object.
         $customeraddress = new AnetAPI\CustomerAddressType();
