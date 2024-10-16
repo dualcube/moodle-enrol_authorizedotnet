@@ -124,6 +124,7 @@ class enrol_authorizedotnet_payment_process {
         $customerdatatype = new AnetAPI\CustomerDataType();
         $customerdatatype->setType("individual");
         $customerdatatype->setId($this->user->id);
+        $customerdatatype->setEmail($this->user->id);
 
         // Creating customer address type object.
         $customeraddress = new AnetAPI\CustomerAddressType();
@@ -134,6 +135,7 @@ class enrol_authorizedotnet_payment_process {
         $customeraddress->setCity($this->formdata->city);
         $customeraddress->setZip($this->formdata->zip);
         $customeraddress->setCountry($this->formdata->country);
+        $customeraddress->setEmail($this->formdata->email);
         
         // Creating transaction request type object.
         $transactionrequesttype = new AnetAPI\TransactionRequestType();
