@@ -87,7 +87,7 @@ class enrol_authorizedotnet_form extends moodleform {
         // Card code (CVV).
         $mform->addElement('text', 'cardcode', get_string('cardcode', 'enrol_authorizedotnet'),
         ['size' => '20', 'maxlength' => '3', 'placeholder' => get_string('cardcodeplaceholder', 'enrol_authorizedotnet'),'class'=>'inputfeild']);
-        $mform->setType('cardcode', PARAM_INT);
+        $mform->setType('cardcode', PARAM_TEXT);
         $mform->addRule('cardcode', get_string('required'), 'required', null, 'client');
         // Billing information header.
         $mform->addElement('html', '<div><h6>'.get_string('billinginfo', "enrol_authorizedotnet").'</h6></div>', );
