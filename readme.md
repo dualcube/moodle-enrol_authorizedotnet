@@ -23,6 +23,7 @@ Installation
 3. Go to Enrolments > Manage enrol plugins > Enable 'Authorize.net' from list
 4. Click 'Settings' which will lead to the settings page of the plugin
 5. Provide merchant credentials for Authorize.net . Note that, you will get all the details from your merchant account.  Now select the checkbox as per requirement. Save the settings.
+   * __Note:__ When upgrading from a version of the plugin before v2.6.5, be sure to adjust the `checkproductionmode` ("Enable test Mode") setting as needed. This checkbox has changed its wording and meaning. It is now _unchecked_ for production accounts and _checked_ for sandbox accounts.
 6. Enable Web Service: Administration > Development Section > Advanced Features option. scroll down and tick the Web Service option, and save.
 7. Manage Protocol: Site Administration > Server tab > Web Services > Manage Protocols. Click on the eye icon on the REST protocol, and save.
 8. Select any course from course listing page.
