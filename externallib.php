@@ -42,12 +42,16 @@ require_once("$CFG->libdir/externallib.php");
  */
 class enrol_authorizedotnet_externallib extends external_api {
     /**
-     * Loads an Authorize.net enrolment instance and validates access to it.
+     * Loads an Authorize.net enrolment instance for a webservice call.
      *
-     * Confirms the instance belongs to this plugin, validates the course context for
-     * the current webservice protocol, and enforces login. Shared by every external
-     * function here that operates on a specific instance, so the checks can't drift
-     * between them.
+     * Confirms the instance belongs to this plugin and validates the system context for
+     * the current webservice protocol. Deliberately does not require_login() against the
+     * course: the caller is, by definition, not yet enrolled in it (that's the whole point
+     * of this payment flow), and require_login($course, ..., preventredirect: true) throws
+     * a require_login_exception for exactly that reason - there is no enrol page left to
+     * redirect an AJAX caller to. Login itself is already enforced before this code runs,
+     * via 'loginrequired' => true in db/services.php. Shared by every external function
+     * here that operates on a specific instance, so the checks can't drift between them.
      *
      * @param int $instanceid Enrolment instance ID.
      * @return array [instance, course, context] for the enrolment instance.
@@ -55,11 +59,11 @@ class enrol_authorizedotnet_externallib extends external_api {
     private static function require_enrol_instance(int $instanceid): array {
         global $DB;
 
+        self::validate_context(context_system::instance());
+
         $instance = $DB->get_record('enrol', ['id' => $instanceid, 'enrol' => 'authorizedotnet'], '*', MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $instance->courseid], '*', MUST_EXIST);
         $context = context_course::instance($course->id);
-        self::validate_context($context);
-        require_login($course, false, null, false, true);
 
         return [$instance, $course, $context];
     }
