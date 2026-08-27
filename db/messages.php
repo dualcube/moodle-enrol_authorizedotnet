@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Authorize.net enrolment plugin version specification.
+ * Defines message providers (types of message sent) for the Stripe enrolment plugin.
  *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
- * @copyright  2021 DualCube (https://dualcube.com)
+ * @copyright  2019 DualCube Team(https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2025090400;
-$plugin->requires  = 2024042210;// Require Moodle version 4.4.
-$plugin->component = 'enrol_authorizedotnet';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.6.6 (Build: 2025051900)';
-$plugin->cron      = 60;
+$messageproviders = [
+    'authorizedotnet_enrolment' => [
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+    ],
+];

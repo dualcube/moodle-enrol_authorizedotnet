@@ -1,0 +1,36 @@
+{
+    "name": "moodle/enrol_authorizedotnet",
+    "description": "Authorizedotnet enrol plugin for Moodle",
+    "type": "moodle-enrol",
+    "license": "GPL-3.0-or-later",
+    "homepage": "https://dualcube.com",
+    "authors": [
+        {
+            "name": "DualCube <admin@dualcube.com>",
+            "homepage": "https://dualcube.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "enrol_authorizedotnet\\": "classes/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "require-dev": {
+        "moodlehq/moodle-cs": "^3.2",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "squizlabs/php_codesniffer": "^3.13"
+    },
+    "scripts": {
+        "zip": "zip -r release/authorizedotnet.zip authorizedotnet -x@exclude.lst",
+        "phpcs": "vendor/bin/phpcs --standard=Moodle --ignore=vendor/*,.git/* .",
+        "phpcf": "vendor/bin/phpcbf --standard=Moodle --ignore=vendor/*,.git/* ."
+    }
+}
