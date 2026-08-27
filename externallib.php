@@ -42,6 +42,29 @@ require_once("$CFG->libdir/externallib.php");
  */
 class enrol_authorizedotnet_externallib extends external_api {
     /**
+     * Loads an Authorize.net enrolment instance and validates access to it.
+     *
+     * Confirms the instance belongs to this plugin, validates the course context for
+     * the current webservice protocol, and enforces login. Shared by every external
+     * function here that operates on a specific instance, so the checks can't drift
+     * between them.
+     *
+     * @param int $instanceid Enrolment instance ID.
+     * @return array [instance, course, context] for the enrolment instance.
+     */
+    private static function require_enrol_instance(int $instanceid): array {
+        global $DB;
+
+        $instance = $DB->get_record('enrol', ['id' => $instanceid, 'enrol' => 'authorizedotnet'], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $instance->courseid], '*', MUST_EXIST);
+        $context = context_course::instance($course->id);
+        self::validate_context($context);
+        require_login($course, false, null, false, true);
+
+        return [$instance, $course, $context];
+    }
+
+    /**
      * Returns parameters for get_config_for_js.
      *
      * @return external_function_parameters
@@ -59,9 +82,11 @@ class enrol_authorizedotnet_externallib extends external_api {
      * @return array
      */
     public static function get_config_for_js($instanceid) {
-        global $DB;
-        self::validate_parameters(self::get_config_for_js_parameters(), ['instanceid' => $instanceid]);
+        $params = self::validate_parameters(self::get_config_for_js_parameters(), ['instanceid' => $instanceid]);
+        self::require_enrol_instance($params['instanceid']);
+
         $plugin = enrol_get_plugin('authorizedotnet');
+
         return [
             'apiloginid' => $plugin->get_config('loginid'),
             'publicclientkey' => $plugin->get_config('publicclientkey'),
@@ -96,7 +121,27 @@ class enrol_authorizedotnet_externallib extends external_api {
     }
 
     /**
+     * Maps an Authorize.Net transaction response code to a stored payment status.
+     *
+     * @param int $responsecode Authorize.Net transaction response code.
+     * @return string
+     */
+    private static function get_payment_status(int $responsecode): string {
+        return match ($responsecode) {
+            1 => 'approved',
+            2 => 'declined',
+            3 => 'error',
+            4 => 'held',
+            default => 'unknown',
+        };
+    }
+
+    /**
      * Processes a payment and enrols the user if successful.
+     *
+     * The enrolment instance, its status and window, and any existing enrolment are all
+     * validated before the card is charged, so a rejected or replayed request never results
+     * in a charge without a matching enrolment.
      *
      * @param int $instanceid Enrolment instance ID
      * @param int $userid User ID
@@ -107,105 +152,114 @@ class enrol_authorizedotnet_externallib extends external_api {
      * }
      */
     public static function process_payment(int $instanceid, int $userid, string $opaquedata): array {
-        global $DB;
+        global $DB, $USER;
 
-        self::validate_parameters(self::process_payment_parameters(), [
+        $params = self::validate_parameters(self::process_payment_parameters(), [
             'instanceid' => $instanceid,
             'userid' => $userid,
             'opaquedata' => $opaquedata,
         ]);
+        $instanceid = $params['instanceid'];
+        $userid = $params['userid'];
 
-        $opaquedataobject = json_decode($opaquedata);
+        [$instance, $course, $context] = self::require_enrol_instance($instanceid);
+
+        if ($userid !== (int) $USER->id) {
+            throw new moodle_exception('invaliduserid', 'enrol_authorizedotnet');
+        }
+
+        if ((int) $instance->status !== ENROL_INSTANCE_ENABLED) {
+            throw new moodle_exception('enrolmentnotavailable', 'enrol_authorizedotnet');
+        }
+
+        $now = time();
+        if (!empty($instance->enrolstartdate) && $instance->enrolstartdate > $now) {
+            throw new moodle_exception('canntenrolearly', 'enrol_authorizedotnet', '', userdate($instance->enrolstartdate));
+        }
+        if (!empty($instance->enrolenddate) && $instance->enrolenddate < $now) {
+            throw new moodle_exception('canntenrollate', 'enrol_authorizedotnet', '', userdate($instance->enrolenddate));
+        }
+
+        if ($DB->record_exists('user_enrolments', ['userid' => $userid, 'enrolid' => $instanceid])) {
+            return ['success' => false, 'message' => get_string('alreadyenrolled', 'enrol_authorizedotnet')];
+        }
+
+        $user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
         $plugin = enrol_get_plugin('authorizedotnet');
-        $cost = (float) $DB->get_field('enrol', 'cost', ['id' => $instanceid]);
+        $cost = (float) $instance->cost;
         if ($cost <= 0) {
             $cost = (float) $plugin->get_config('cost');
         }
 
-        $user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
-        $courseid = $DB->get_field('enrol', 'courseid', ['id' => $instanceid]);
-        $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
-
         $helper = new authorizedotnet_helper(
             $plugin->get_config('loginid'),
             $plugin->get_config('transactionkey'),
-            (bool)$plugin->get_config('checkproductionmode')
+            (bool) $plugin->get_config('checkproductionmode')
         );
 
-        $response = $helper->create_transaction($cost, $opaquedataobject);
-        $success = false;
-        $message = '';
+        $response = $helper->create_transaction($cost, json_decode($params['opaquedata']));
 
-        if ($response['success']) {
-            $success = true;
-            $context = context_course::instance($courseid);
-            debugging('Authorize.net response: ' . var_export($response, true), DEBUG_DEVELOPER);
-
-            try {
-                // Save transaction record to the database.
-                $transactiondata = new \stdClass();
-                $transactiondata->itemname = $course->fullname;
-                $transactiondata->courseid = $courseid;
-                $transactiondata->userid = $userid;
-                $transactiondata->instanceid = $instanceid;
-                $transactiondata->amount = (string) $cost;
-                if ($response['responsecode'] == 1) {
-                    $transactiondata->paymentstatus = 'approved';
-                } else if ($response['responsecode'] == 2) {
-                    $transactiondata->paymentstatus = 'declined';
-                } else if ($response['responsecode'] == 3) {
-                    $transactiondata->paymentstatus = 'error';
-                } else if ($response['responsecode'] == 4) {
-                    $transactiondata->paymentstatus = 'held';
-                } else {
-                    $transactiondata->paymentstatus = 'unknown';
-                }
-                $transactiondata->responsecode = isset($response['responsecode']) ? (int) $response['responsecode'] : 0;
-                $transactiondata->responsereasoncode = isset($response['responsereasoncode']) ?
-                 (int) $response['responsereasoncode'] : 0;
-                $transactiondata->responsereasontext = $response['responsereasontext'] ?? '';
-                $transactiondata->authcode = substr($response['authcode'] ?? '', 0, 30);
-                $transactiondata->transid = $response['transactionid'];
-                $transactiondata->invoicenum = $response['invoicenum'] ?? '';
-                $transactiondata->testrequest = (int) $plugin->get_config('checkproductionmode');
-                $transactiondata->firstname = $user->firstname ?? '';
-                $transactiondata->lastname = $user->lastname ?? '';
-                $transactiondata->company = $user->institution ?? '';
-                $transactiondata->phone = $user->phone1 ?? '';
-                $transactiondata->email = $user->email ?? '';
-                $transactiondata->address = $user->address ?? '';
-                $transactiondata->city = $user->city ?? '';
-                $transactiondata->zip = $user->zip ?? '';
-                $transactiondata->country = $user->country ?? '';
-                $transactiondata->authjson = json_encode($response);
-                $transactiondata->timeupdated = time();
-                debugging('Authorize.net transaction data: ' . var_export($transactiondata, true), DEBUG_DEVELOPER);
-
-                $DB->insert_record('enrol_authorizedotnet', $transactiondata);
-                // Enroll the user and send notifications.
-                $data = new \stdClass();
-                $data->courseid = $course->id;
-                $data->userid = $user->id;
-                $data->instanceid = $instanceid;
-                $data->amount = $cost;
-                $data->trans_id = $response['transactionid'];
-                $data->timeupdated = time();
-                $plugininstance = $DB->get_record('enrol', ['id' => $instanceid, 'enrol' => 'authorizedotnet'], '*', MUST_EXIST);
-                $plugin->enroll_user_and_send_notifications($plugininstance, $course, $context, $user, $data);
-            } catch (\Exception $e) {
-                debugging('Exception while trying to process payment: ' . $e->getMessage(), DEBUG_DEVELOPER);
-                $success = false;
-                $message = 'Internal error during enrollment: ' . $e->getMessage();
-            }
-        } else {
-            $success = false;
-            $message = $response['message'];
+        if (!$response['success']) {
+            return ['success' => false, 'message' => $response['message']];
         }
 
-        return [
-            'success' => $success,
-            'message' => $message,
-        ];
+        debugging('Authorize.net response: ' . var_export($response, true), DEBUG_DEVELOPER);
+
+        try {
+            $responsecode = (int) ($response['responsecode'] ?? 0);
+
+            // Save transaction record to the database.
+            $transactiondata = new stdClass();
+            $transactiondata->itemname = $course->fullname;
+            $transactiondata->courseid = $course->id;
+            $transactiondata->userid = $userid;
+            $transactiondata->instanceid = $instanceid;
+            $transactiondata->amount = (string) $cost;
+            $transactiondata->paymentstatus = self::get_payment_status($responsecode);
+            $transactiondata->responsecode = $responsecode;
+            $transactiondata->responsereasoncode = (int) ($response['responsereasoncode'] ?? 0);
+            $transactiondata->responsereasontext = $response['responsereasontext'] ?? '';
+            $transactiondata->authcode = substr($response['authcode'] ?? '', 0, 30);
+            $transactiondata->transid = $response['transactionid'];
+            $transactiondata->invoicenum = $response['invoicenum'] ?? '';
+            $transactiondata->testrequest = (int) $plugin->get_config('checkproductionmode');
+            $transactiondata->firstname = $user->firstname ?? '';
+            $transactiondata->lastname = $user->lastname ?? '';
+            $transactiondata->company = $user->institution ?? '';
+            $transactiondata->phone = $user->phone1 ?? '';
+            $transactiondata->email = $user->email ?? '';
+            $transactiondata->address = $user->address ?? '';
+            $transactiondata->city = $user->city ?? '';
+            $transactiondata->zip = $user->zip ?? '';
+            $transactiondata->country = $user->country ?? '';
+            $transactiondata->authjson = json_encode($response);
+            $transactiondata->timeupdated = time();
+            debugging('Authorize.net transaction data: ' . var_export($transactiondata, true), DEBUG_DEVELOPER);
+
+            $DB->insert_record('enrol_authorizedotnet', $transactiondata);
+
+            // Enrol the user and send notifications.
+            $enrolmentdata = new stdClass();
+            $enrolmentdata->courseid = $course->id;
+            $enrolmentdata->userid = $user->id;
+            $enrolmentdata->instanceid = $instanceid;
+            $enrolmentdata->amount = $cost;
+            $enrolmentdata->transid = $response['transactionid'];
+            $enrolmentdata->timeupdated = time();
+            $plugin->enroll_user_and_send_notifications($instance, $course, $context, $user, $enrolmentdata);
+
+            return ['success' => true, 'message' => ''];
+        } catch (Exception $e) {
+            // The card has already been captured at this point, so surface this loudly for an
+            // admin to reconcile manually rather than silently losing track of the payment.
+            debugging(
+                'Authorize.net transaction ' . ($response['transactionid'] ?? '') .
+                    ' succeeded but enrolment failed for user ' . $userid . ' in course ' . $course->id .
+                    ': ' . $e->getMessage(),
+                DEBUG_NORMAL
+            );
+            return ['success' => false, 'message' => get_string('enrolmentfailedaftercharge', 'enrol_authorizedotnet')];
+        }
     }
 
     /**

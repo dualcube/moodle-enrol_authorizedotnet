@@ -14,10 +14,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe module payment
+ * Handles the Authorize.Net Accept.js payment flow on the course enrolment page.
  *
  * @module     enrol_authorizedotnet/payment
- * @copyright  2025 YOUR NAME <your@email.com>
+ * @copyright  2025 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

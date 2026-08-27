@@ -108,9 +108,21 @@ class authorizedotnet_helper {
     /**
      * Get merchant details (including currency) from Authorize.Net.
      *
+     * The result is cached, since the merchant currency rarely changes and would
+     * otherwise require a live API call on every settings, edit-instance, and
+     * enrolment page render.
+     *
      * @return string
      */
     public function get_merchant_currency(): string {
+        $cache = \cache::make('enrol_authorizedotnet', 'merchantcurrency');
+        $cachekey = ($this->sandbox ? 'sandbox_' : 'live_') . md5($this->apiloginid);
+
+        $currency = $cache->get($cachekey);
+        if ($currency !== false) {
+            return $currency;
+        }
+
         $payload = [
             'getMerchantDetailsRequest' => [
                 'merchantAuthentication' => [
@@ -122,8 +134,13 @@ class authorizedotnet_helper {
 
         $result = $this->post($payload);
         $currencies = $result['currencies'] ?? [];
+        $currency = is_array($currencies) && !empty($currencies) ? $currencies[0] : '';
 
-        return is_array($currencies) && !empty($currencies) ? $currencies[0] : '';
+        if ($currency !== '') {
+            $cache->set($cachekey, $currency);
+        }
+
+        return $currency;
     }
 
     /**

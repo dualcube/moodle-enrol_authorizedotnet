@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['adminmessage'] = ' Hello,<br /> A new student has enrolled in a course. <br />Student Name: {$a->username}<br /> Course Name: {$a->course}<br /> Best regards,<br /> {$a->sitename} Team';
+$string['alreadyenrolled'] = 'You are already enrolled in this course.';
 $string['assignrole'] = 'Assign role';
 $string['authorising'] = 'Authorising ...';
 $string['authorizedotnet:config'] = 'Configure Authorize.net enrol instances';
@@ -48,10 +49,13 @@ $string['enrolnowin'] = 'Enrol now in';
 $string['enrolperiod'] = 'Enrolment duration';
 $string['enrolperiod_desc'] = 'Default length of time that the enrolment is valid. If set to zero, the enrolment duration will be unlimited by default.';
 $string['enrolperiod_help'] = 'Length of time that the enrolment is valid, starting with the moment the user is enrolled. If disabled, the enrolment duration will be unlimited.';
+$string['enrolmentfailedaftercharge'] = 'Your payment was processed, but enrolment could not be completed automatically. Please contact the site administrator with your transaction details.';
+$string['enrolmentnotavailable'] = 'This enrolment method is not currently available.';
 $string['enrolstartdate'] = 'Start date';
 $string['enrolstartdate_help'] = 'If enabled, users can be enrolled from this date onward only.';
 $string['expiredaction'] = 'Enrolment expiration action';
 $string['expiredaction_help'] = 'Select action to carry out when user enrolment expires. Please note that some user data and settings are purged from course during course unenrolment.';
+$string['invaliduserid'] = 'Not a valid user id';
 $string['loginid'] = 'Authorize.net Login ID';
 $string['mailadmins'] = 'Notify admin';
 $string['mailstudents'] = 'Notify students';

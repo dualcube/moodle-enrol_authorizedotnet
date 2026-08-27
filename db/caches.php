@@ -15,19 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Authorize.net enrolment plugin version specification.
+ * Cache definitions for the Authorize.net enrolment plugin.
  *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
- * @copyright  2021 DualCube (https://dualcube.com)
+ * @copyright  2025 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026082700;
-$plugin->requires  = 2024042210;// Require Moodle version 4.4.
-$plugin->component = 'enrol_authorizedotnet';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.6.7 (Build: 2026082700)';
-$plugin->cron      = 60;
+$definitions = [
+    'merchantcurrency' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => true,
+        'ttl' => HOURSECS,
+    ],
+];
