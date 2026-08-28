@@ -133,6 +133,18 @@ class authorizedotnet_helper {
         ];
 
         $result = $this->post($payload);
+        if ($result === null) {
+            debugging('Authorize.net getMerchantDetails: no response from Authorize.Net', DEBUG_NORMAL);
+            return '';
+        }
+
+        $messages = $result['messages'] ?? null;
+        if (!$messages || $messages['resultCode'] !== 'Ok') {
+            $message = $messages['message'][0]['text'] ?? 'Unknown error';
+            debugging('Authorize.net getMerchantDetails failed: ' . $message, DEBUG_NORMAL);
+            return '';
+        }
+
         $currencies = $result['currencies'] ?? [];
         $currency = is_array($currencies) && !empty($currencies) ? $currencies[0] : '';
 

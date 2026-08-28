@@ -218,11 +218,24 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
             return $OUTPUT->render($enrolpage);
         }
 
+        $merchantcurrency = $this->get_merchant_currency();
+        if ($merchantcurrency === '') {
+            // The Authorize.net API call failed (bad credentials, sandbox/production mismatch,
+            // network issue, etc.) - see the Moodle log for the underlying reason. Showing the
+            // payment widget with no currency would just present a broken-looking checkout.
+            $enrolpage = new enrol_page(
+                $instance,
+                $this->get_instance_name($instance),
+                $OUTPUT->notification(get_string('paymentunavailable', 'enrol_authorizedotnet'), 'error')
+            );
+            return $OUTPUT->render($enrolpage);
+        }
+
         $name = $this->get_instance_name($instance);
         $localisedcost = format_float($cost, 2, true);
 
         $templatedata = [
-            'currency' => $this->get_merchant_currency(),
+            'currency' => $merchantcurrency,
             'cost' => $localisedcost,
             'coursename' => format_string($course->fullname, true, ['context' => $context]),
             'instanceid' => $instance->id,
@@ -254,6 +267,8 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return void
      */
     public function edit_instance_form($instance, MoodleQuickForm $mform, $context) {
+        global $OUTPUT;
+
         $mform->addElement('text', 'name', get_string('custominstancename', 'enrol'));
         $mform->setType('name', PARAM_TEXT);
 
@@ -269,14 +284,23 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
         $mform->setDefault('cost', format_float($this->get_config('cost'), 2, true));
 
         $merchantcurrency = $this->get_merchant_currency();
-        $mform->addElement('static', 'currency_display', get_string('currency', 'enrol_authorizedotnet'), $merchantcurrency);
+        if ($merchantcurrency === '') {
+            $mform->addElement(
+                'static',
+                'currency_display',
+                get_string('currency', 'enrol_authorizedotnet'),
+                $OUTPUT->notification(get_string('currencyunavailable', 'enrol_authorizedotnet'), 'error')
+            );
+        } else {
+            $mform->addElement('static', 'currency_display', get_string('currency', 'enrol_authorizedotnet'), $merchantcurrency);
 
-        $mform->addElement(
-            'static',
-            'currencywarning',
-            '',
-            get_string('currencycannotchange', 'enrol_authorizedotnet', $merchantcurrency)
-        );
+            $mform->addElement(
+                'static',
+                'currencywarning',
+                '',
+                get_string('currencycannotchange', 'enrol_authorizedotnet', $merchantcurrency)
+            );
+        }
 
         if ($instance->id) {
             $roles = get_default_enrol_roles($context, $instance->roleid);
