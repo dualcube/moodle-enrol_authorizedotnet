@@ -1,0 +1,62 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template enrol_authorizedotnet/enrol_page
+
+    Contents of the enrolment widget on the course enrolment page
+
+    Example context (json):
+    {
+        "cost": "10.00",
+        "currency": "USD",
+        "coursename": "Course Name",
+        "instanceid": "1"
+    }
+}}
+<div class="authorizedotnet-paymentcontainer">
+    <div class="authorizedotnet-currencybox">
+        <span class="currencyselected">
+            {{currency}} {{cost}}
+        </span>
+    </div>
+
+    <div class="authorizedotnet-item">
+        <div class="authorizedotnet-itemtitle">{{coursename}}</div>
+        <div class="authorizedotnet-itemprice">{{currency}} {{cost}}</div>
+    </div>
+    <p class="authorizedotnet-itemsubtitle">{{coursename}}</p>
+
+    <div class="authorizedotnet-line"></div>
+
+    <div class="authorizedotnet-subtotal">
+        <span>{{# str }} enrolnowin, enrol_authorizedotnet {{/ str }} {{coursename}}</span>
+        <span id="subtotalamount-{{instanceid}}">{{currency}} {{cost}}</span>
+    </div>
+
+    <div class="authorizedotnet-total" id="total-{{instanceid}}">
+        <strong>{{# str }} totaldue, enrol_authorizedotnet {{/ str }}</strong>
+        <strong id="totalamount-{{instanceid}}">{{currency}} {{cost}}</strong>
+    </div>
+
+    <div id="paymentresponse-{{instanceid}}" class="authorizedotnet-error-message"></div>
+
+    <div id="enrollmentbutton-{{instanceid}}">
+        <button id="enrolbutton-{{instanceid}}" class="btn btn-primary">
+            {{# str }} enrolnow, enrol_authorizedotnet {{/ str }}
+        </button>
+    </div>
+</div>
