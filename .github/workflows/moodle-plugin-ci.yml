@@ -53,6 +53,17 @@ jobs:
         with:
           node-version: '18'
 
+      # moodle-plugin-ci's Mustache Lint step shells out to a Java-based HTML
+      # validator (vnu.jar) to check each template's rendered output. Without
+      # an explicit setup, whether a working `java` ends up on PATH depends on
+      # undocumented runner-image defaults - set up a known-good JDK instead
+      # of relying on that.
+      - name: Setup Java (for Mustache Lint's HTML validator)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Install Moodle Node dependencies
         run: npm install
         working-directory: ${{ env.PLUGIN_SLUG }}
