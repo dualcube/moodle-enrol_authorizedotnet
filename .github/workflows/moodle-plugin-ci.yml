@@ -91,11 +91,11 @@ jobs:
 
       - name: Moodle Code Checker
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci phpcs --max-warnings 0
+        run: moodle-plugin-ci phpcs --max-warnings 0 "$PLUGIN_SLUG"
 
       - name: Moodle PHPDoc Checker
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci phpdoc --max-warnings 0
+        run: moodle-plugin-ci phpdoc --max-warnings 0 "$PLUGIN_SLUG"
 
       - name: PHP Mess Detector
         if: ${{ !cancelled() }}
@@ -105,7 +105,7 @@ jobs:
 
       - name: Mustache Lint
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci mustache
+        run: moodle-plugin-ci mustache "$PLUGIN_SLUG"
 
       - name: PHP Code Beautifier and Fixer
         if: ${{ !cancelled() }}
