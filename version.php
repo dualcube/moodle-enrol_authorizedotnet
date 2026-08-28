@@ -29,5 +29,5 @@ $plugin->version   = 2026082800;
 $plugin->requires  = 2025041400;// Require Moodle version 5.0.
 $plugin->component = 'enrol_authorizedotnet';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.6.7 (Build: 2026082800)';
+$plugin->release   = '2.7.0 (Build: 2026082800)';
 $plugin->cron      = 60;
