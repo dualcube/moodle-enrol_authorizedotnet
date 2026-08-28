@@ -212,13 +212,34 @@ jobs:
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
         working-directory: ${{ env.PLUGIN_SLUG }}
 
+      - name: Determine release date
+        id: reldate
+        run: |
+          DAY=$(date -u +%-d)
+          case $DAY in
+            1|21|31) SUFFIX="st" ;;
+            2|22) SUFFIX="nd" ;;
+            3|23) SUFFIX="rd" ;;
+            *) SUFFIX="th" ;;
+          esac
+          echo "date=${DAY}${SUFFIX} $(date -u +'%B %Y')" >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.version.outputs.version }}
           files: release/${{ env.PLUGIN_SLUG }}.zip
           body: |
-            This is the official release for version v${{ steps.version.outputs.version }}.
-            Thank you for using our ${{ env.PLUGIN_SLUG }} plugin!
+            We're pleased to announce the official release of Authorize.net Payment Gateway for Moodle v${{ steps.version.outputs.version }}.
+
+            Thank you for using our Authorize.net plugin and for being part of the Moodle community.
+
+            Release Information
+
+            Version: v${{ steps.version.outputs.version }}
+            Release: Official
+            Date: ${{ steps.reldate.outputs.date }}
+
+            Thank you for choosing our plugin. We appreciate your continued support!
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
