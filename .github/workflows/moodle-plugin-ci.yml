@@ -116,7 +116,14 @@ jobs:
 
       - name: Mustache Lint
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci mustache "$PLUGIN_SLUG"
+        # No explicit plugin path here (unlike the other steps): mustache lint
+        # renders templates through Moodle's own component/HTML-validator
+        # machinery, which requires the plugin's actual in-Moodle-tree
+        # location, not this checkout's original path. moodle-plugin-ci's
+        # `install` step already recorded that correct path in PLUGIN_DIR
+        # (loaded automatically from ci/.env on every invocation), so passing
+        # our own path here would override it with the wrong one.
+        run: moodle-plugin-ci mustache
 
       - name: PHP Code Beautifier and Fixer
         if: ${{ !cancelled() }}
