@@ -47,32 +47,37 @@ const processPayment = (instanceid, userid, opaqueData) =>
         },
     }])[0];
 
+/**
+ * (Re)loads the Authorize.Net Accept UI SDK.
+ *
+ * AcceptUI.js wires up its click handling against whichever ".AcceptUI" button
+ * exists in the DOM when the script itself runs; it does not pick up buttons
+ * added afterwards. Our modal is rebuilt (and its button re-rendered as a new
+ * DOM node) on every "Enrol now" click, so the script must be reloaded fresh
+ * each time too - reusing a previously loaded copy leaves the new button
+ * unwired and silently unresponsive.
+ *
+ * @param {string} environment "sandbox" or "production".
+ * @return {Promise<void>}
+ */
 const switchSdk = (environment) => {
     const sdkUrl = (environment === 'sandbox')
         ? 'https://jstest.authorize.net/v3/AcceptUI.js'
         : 'https://js.authorize.net/v3/AcceptUI.js';
 
-    if (switchSdk.currentlyloaded === sdkUrl) {
-        return Promise.resolve();
-    }
-
-    if (switchSdk.currentlyloaded) {
-        const suspectedScript = document.querySelector(`script[src="${switchSdk.currentlyloaded}"]`);
-        if (suspectedScript) {
-            suspectedScript.parentNode.removeChild(suspectedScript);
-        }
-    }
+    document.querySelectorAll('script[data-authorizedotnet-acceptui]').forEach((existing) => {
+        existing.parentNode.removeChild(existing);
+    });
 
     const script = document.createElement('script');
     return new Promise(resolve => {
         script.onload = () => resolve();
         script.setAttribute('src', sdkUrl);
         script.setAttribute('charset', 'utf-8');
+        script.setAttribute('data-authorizedotnet-acceptui', '1');
         document.head.appendChild(script);
-        switchSdk.currentlyloaded = sdkUrl;
     });
 };
-switchSdk.currentlyloaded = '';
 
 function authorizeNetPayment(instanceid, userid) {
     const enrolButton = document.getElementById(`enrolbutton-${instanceid}`);
