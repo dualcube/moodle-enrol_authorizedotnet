@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Shared helpers for the Authorize.net plugin's external API classes.
+ * Shared enrolment instance loading for the Authorize.net plugin's external API classes.
  *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
@@ -30,9 +30,13 @@ use context_system;
 use core_external\external_api;
 
 /**
- * Helpers shared by every external function in this plugin.
+ * Loads and validates an Authorize.net enrolment instance for a webservice call.
+ *
+ * Shared by every external function in this plugin that operates on a specific
+ * instance (get_payment_config, process_payment), so the checks can't drift
+ * between them.
  */
-class util {
+class enrol_instance_loader {
     /**
      * Loads an Authorize.net enrolment instance for a webservice call.
      *
@@ -42,8 +46,7 @@ class util {
      * of this payment flow), and require_login($course, ..., preventredirect: true) throws
      * a require_login_exception for exactly that reason - there is no enrol page left to
      * redirect an AJAX caller to. Login itself is already enforced before this code runs,
-     * via 'loginrequired' => true in db/services.php. Shared by every external function
-     * here that operates on a specific instance, so the checks can't drift between them.
+     * via 'loginrequired' => true in db/services.php.
      *
      * @param int $instanceid Enrolment instance ID.
      * @return array [instance, course, context] for the enrolment instance.

@@ -97,7 +97,7 @@ class process_payment extends external_api {
         $instanceid = $params['instanceid'];
         $userid = $params['userid'];
 
-        [$instance, $course, $context] = util::require_enrol_instance($instanceid);
+        [$instance, $course, $context] = enrol_instance_loader::require_enrol_instance($instanceid);
 
         self::validate_payment_eligibility($instance, $userid);
 

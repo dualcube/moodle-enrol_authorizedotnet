@@ -55,7 +55,7 @@ class get_payment_config extends external_api {
      */
     public static function execute(int $instanceid): array {
         $params = self::validate_parameters(self::execute_parameters(), ['instanceid' => $instanceid]);
-        util::require_enrol_instance($params['instanceid']);
+        enrol_instance_loader::require_enrol_instance($params['instanceid']);
 
         $plugin = enrol_get_plugin('authorizedotnet');
 
