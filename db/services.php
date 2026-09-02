@@ -40,7 +40,7 @@ $services = [
 
 $functions = [
     'moodle_authorizedotnet_get_config_for_js' => [
-        'classname'   => 'enrol_authorizedotnet\external\get_config_for_js',
+        'classname'   => 'enrol_authorizedotnet\external\get_payment_config',
         'methodname'  => 'execute',
         'description' => 'Get the configuration necessary for the client-side JavaScript.',
         'type'        => 'read',

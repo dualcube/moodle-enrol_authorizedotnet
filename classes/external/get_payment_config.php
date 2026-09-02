@@ -35,7 +35,7 @@ use core_external\external_value;
  * @package    enrol_authorizedotnet
  * @category   external
  */
-class get_config_for_js extends external_api {
+class get_payment_config extends external_api {
     /**
      * Returns description of method parameters.
      *
