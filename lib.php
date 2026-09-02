@@ -25,6 +25,7 @@
 
 use core_enrol\output\enrol_page;
 use enrol_authorizedotnet\authorizedotnet_helper;
+use enrol_authorizedotnet\plugin_base;
 
 /**
  * Enrolment plugin class for Authorize.net.
@@ -32,16 +33,14 @@ use enrol_authorizedotnet\authorizedotnet_helper;
  * Provides UI hooks, capabilities checks, and helper utilities
  * for handling enrolment via Authorize.net.
  *
- * Note for PHP Mess Detector's TooManyPublicMethods / ExcessiveClassComplexity /
- * CouplingBetweenObjects rules: the bulk of this class's public surface and
- * dependencies come from mandatory enrol_plugin base-class overrides that Moodle
- * core calls by type, so they can't be made non-public or removed without breaking
- * the plugin. @SuppressWarnings is intentionally not used here as it is not a
- * docblock tag recognised by the Moodle coding standard.
+ * Extends plugin_base (classes/plugin_base.php) rather than enrol_plugin directly:
+ * that class holds the simple capability/state-predicate overrides, so that no
+ * single class carries the full mandatory enrol_plugin override surface - see
+ * plugin_base's docblock for why.
  *
  * @package   enrol_authorizedotnet
  */
-class enrol_authorizedotnet_plugin extends enrol_plugin {
+class enrol_authorizedotnet_plugin extends plugin_base {
     /**
      * Get the merchant currency from the Authorize.net API via helper.
      *
@@ -66,47 +65,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
     public function get_info_icons(array $instances) {
         unset($instances);
         return [new pix_icon('icon', get_string('pluginname', 'enrol_authorizedotnet'), 'enrol_authorizedotnet')];
-    }
-
-    /**
-     * Whether roles are protected (not editable) for this enrolment method.
-     *
-     * @return bool
-     */
-    public function roles_protected() {
-        return false;
-    }
-
-    /**
-     * Whether users can be unenrolled by this plugin.
-     *
-     * @param stdClass $instance enrol instance
-     * @return bool
-     */
-    public function allow_unenrol(stdClass $instance) {
-        unset($instance);
-        return true;
-    }
-
-    /**
-     * Whether this enrolment instance is manageable.
-     *
-     * @param stdClass $instance enrol instance
-     * @return bool
-     */
-    public function allow_manage(stdClass $instance) {
-        unset($instance);
-        return true;
-    }
-
-    /**
-     * Show "Enrol me" link on the course enrolment page.
-     *
-     * @param stdClass $instance enrol instance
-     * @return bool
-     */
-    public function show_enrolme_link(stdClass $instance) {
-        return ($instance->status == ENROL_INSTANCE_ENABLED);
     }
 
     /**
@@ -257,15 +215,6 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
 
         $enrolpage = new enrol_page($instance, $name, $body);
         return $OUTPUT->render($enrolpage);
-    }
-
-    /**
-     * Whether to use standard editing UI on instance edit form.
-     *
-     * @return bool
-     */
-    public function use_standard_editing_ui() {
-        return true;
     }
 
     /**
@@ -448,27 +397,5 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
     public function cron() {
         $trace = new text_progress_trace();
         $this->process_expirations($trace);
-    }
-
-    /**
-     * Whether the current user can delete this instance.
-     *
-     * @param stdClass $instance enrol instance
-     * @return bool
-     */
-    public function can_delete_instance($instance) {
-        $context = context_course::instance($instance->courseid);
-        return has_capability('enrol/authorizedotnet:config', $context);
-    }
-
-    /**
-     * Whether the current user can hide/show this instance.
-     *
-     * @param stdClass $instance enrol instance
-     * @return bool
-     */
-    public function can_hide_show_instance($instance) {
-        $context = context_course::instance($instance->courseid);
-        return has_capability('enrol/authorizedotnet:config', $context);
     }
 }
