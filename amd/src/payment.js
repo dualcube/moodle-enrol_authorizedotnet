@@ -25,16 +25,16 @@ import ajax from "core/ajax";
 import Templates from "core/templates";
 import Modal from "core/modal";
 import ModalEvents from "core/modal_events";
-import { getString } from "core/str";
+import {getString} from "core/str";
 import Notification from "core/notification";
 
-const { call: fetchMany } = ajax;
+const {call: fetchMany} = ajax;
 
 // Repository function
 const getConfigForJs = (instanceid) =>
     fetchMany([{
         methodname: "moodle_authorizedotnet_get_config_for_js",
-        args: { instanceid },
+        args: {instanceid},
     }])[0];
 
 const processPayment = (instanceid, userid, opaqueData) =>
@@ -91,7 +91,7 @@ function authorizeNetPayment(instanceid, userid) {
         return;
     }
 
-    enrolButton.addEventListener("click", async () => {
+    enrolButton.addEventListener("click", async() => {
         let modal;
         try {
             const config = await getConfigForJs(instanceid);
@@ -111,7 +111,7 @@ function authorizeNetPayment(instanceid, userid) {
             });
 
             await switchSdk(config.environment);
-            window.responseHandler = function (response) {
+            window.responseHandler = function(response) {
                 // Prevent outside clicks while processing.
                 modal.getRoot().on(ModalEvents.outsideClick, (e) => e.preventDefault());
 
@@ -134,6 +134,7 @@ function authorizeNetPayment(instanceid, userid) {
                         } else {
                             Notification.alert(getString('error', 'moodle'), res.message);
                         }
+                        return undefined;
                     })
                     .catch((err) => {
                         Notification.exception(err);
