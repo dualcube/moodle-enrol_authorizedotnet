@@ -27,6 +27,7 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use enrol_authorizedotnet\authorizedotnet_helper;
+use enrol_authorizedotnet\enrolment_notifier;
 
 /**
  * External functions for the Authorize.net enrolment plugin.
@@ -262,7 +263,7 @@ class enrol_authorizedotnet_externallib extends external_api {
             $transactiondata = self::build_transaction_record($response, $course, $user, $instanceid, $cost, $plugin);
             $DB->insert_record('enrol_authorizedotnet', $transactiondata);
 
-            $plugin->enroll_user_and_send_notifications($instance, $course, $context, $user);
+            enrolment_notifier::enrol_and_notify($plugin, $instance, $course, $context, $user);
 
             return ['success' => true, 'message' => ''];
         } catch (Exception $e) {
