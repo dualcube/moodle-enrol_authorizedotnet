@@ -1,6 +1,6 @@
 {
   "name": "moodle-enrol-authorizedotnet",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "scripts": {
     "release": "git tag -a v${npm_package_version} -m \"Release v${npm_package_version}\" && git push origin v${npm_package_version}",
     "phpcs": "composer run-script phpcs",
