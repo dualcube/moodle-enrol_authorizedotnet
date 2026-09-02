@@ -15,105 +15,39 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * External library for authorizedotnet.
+ * External function: process a payment and enrol the user.
  *
  * @package    enrol_authorizedotnet
  * @author     DualCube <admin@dualcube.com>
- * @copyright  2021 DualCube (https://dualcube.com)
+ * @copyright  2026 DualCube (https://dualcube.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace enrol_authorizedotnet\external;
+
+use context;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use enrol_authorizedotnet\authorizedotnet_helper;
 use enrol_authorizedotnet\enrolment_notifier;
+use Exception;
+use moodle_exception;
+use stdClass;
 
 /**
- * External functions for the Authorize.net enrolment plugin.
- *
- * Defines the external functions exposed via web services.
+ * Processes a payment and enrols the user if successful.
  *
  * @package    enrol_authorizedotnet
  * @category   external
  */
-class enrol_authorizedotnet_externallib extends external_api {
+class process_payment extends external_api {
     /**
-     * Loads an Authorize.net enrolment instance for a webservice call.
-     *
-     * Confirms the instance belongs to this plugin and validates the system context for
-     * the current webservice protocol. Deliberately does not require_login() against the
-     * course: the caller is, by definition, not yet enrolled in it (that's the whole point
-     * of this payment flow), and require_login($course, ..., preventredirect: true) throws
-     * a require_login_exception for exactly that reason - there is no enrol page left to
-     * redirect an AJAX caller to. Login itself is already enforced before this code runs,
-     * via 'loginrequired' => true in db/services.php. Shared by every external function
-     * here that operates on a specific instance, so the checks can't drift between them.
-     *
-     * @param int $instanceid Enrolment instance ID.
-     * @return array [instance, course, context] for the enrolment instance.
-     */
-    private static function require_enrol_instance(int $instanceid): array {
-        global $DB;
-
-        self::validate_context(context_system::instance());
-
-        $instance = $DB->get_record('enrol', ['id' => $instanceid, 'enrol' => 'authorizedotnet'], '*', MUST_EXIST);
-        $course = $DB->get_record('course', ['id' => $instance->courseid], '*', MUST_EXIST);
-        $context = context_course::instance($course->id);
-
-        return [$instance, $course, $context];
-    }
-
-    /**
-     * Returns parameters for get_config_for_js.
+     * Returns description of method parameters.
      *
      * @return external_function_parameters
      */
-    public static function get_config_for_js_parameters() {
-        return new external_function_parameters([
-            'instanceid' => new external_value(PARAM_INT, 'Enrolment instance ID'),
-        ]);
-    }
-
-    /**
-     * Returns configuration data needed for client-side JS.
-     *
-     * @param int $instanceid Enrolment instance ID
-     * @return array
-     */
-    public static function get_config_for_js($instanceid) {
-        $params = self::validate_parameters(self::get_config_for_js_parameters(), ['instanceid' => $instanceid]);
-        self::require_enrol_instance($params['instanceid']);
-
-        $plugin = enrol_get_plugin('authorizedotnet');
-
-        return [
-            'apiloginid' => $plugin->get_config('loginid'),
-            'publicclientkey' => $plugin->get_config('publicclientkey'),
-            'environment' => $plugin->get_config('checkproductionmode') ? 'sandbox' : 'production',
-        ];
-    }
-
-    /**
-     * Returns description of get_config_for_js return values.
-     *
-     * @return external_function_parameters
-     */
-    public static function get_config_for_js_returns() {
-        return new external_function_parameters([
-            'apiloginid' => new external_value(PARAM_RAW, 'The API login ID for the gateway.'),
-            'publicclientkey' => new external_value(PARAM_RAW, 'The public client key for the gateway.'),
-            'environment' => new external_value(PARAM_RAW, 'The environment (sandbox or production).'),
-        ]);
-    }
-
-    /**
-     * Returns parameters for process_payment.
-     *
-     * @return external_function_parameters
-     */
-    public static function process_payment_parameters() {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'instanceid' => new external_value(PARAM_INT, 'The enrolment instance ID'),
             'userid' => new external_value(PARAM_INT, 'The user ID'),
@@ -152,10 +86,10 @@ class enrol_authorizedotnet_externallib extends external_api {
      *     message => string Message or error description
      * }
      */
-    public static function process_payment(int $instanceid, int $userid, string $opaquedata): array {
+    public static function execute(int $instanceid, int $userid, string $opaquedata): array {
         global $DB;
 
-        $params = self::validate_parameters(self::process_payment_parameters(), [
+        $params = self::validate_parameters(self::execute_parameters(), [
             'instanceid' => $instanceid,
             'userid' => $userid,
             'opaquedata' => $opaquedata,
@@ -163,7 +97,7 @@ class enrol_authorizedotnet_externallib extends external_api {
         $instanceid = $params['instanceid'];
         $userid = $params['userid'];
 
-        [$instance, $course, $context] = self::require_enrol_instance($instanceid);
+        [$instance, $course, $context] = util::require_enrol_instance($instanceid);
 
         self::validate_payment_eligibility($instance, $userid);
 
@@ -329,11 +263,11 @@ class enrol_authorizedotnet_externallib extends external_api {
     }
 
     /**
-     * Returns description of process_payment return values.
+     * Returns description of method return value.
      *
      * @return external_function_parameters
      */
-    public static function process_payment_returns() {
+    public static function execute_returns(): external_function_parameters {
         return new external_function_parameters([
             'success' => new external_value(PARAM_BOOL, 'Whether everything was successful or not.'),
             'message' => new external_value(PARAM_RAW, 'Message (usually the error message).'),

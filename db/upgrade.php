@@ -41,10 +41,10 @@ function xmldb_enrol_authorizedotnet_upgrade($oldversion) {
     if ($oldversion < 2025090400) {
         $table = new xmldb_table('enrol_authorizedotnet');
 
-        enrol_authorizedotnet_upgrade_2025090400_drop_fields($dbman, $table);
-        enrol_authorizedotnet_upgrade_2025090400_resize_fields($dbman, $table);
-        enrol_authorizedotnet_upgrade_2025090400_rename_fields($dbman, $table);
-        enrol_authorizedotnet_upgrade_2025090400_migrate_clientkey();
+        enrol_authorizedotnet_upgrade_drop_fields($dbman, $table);
+        enrol_authorizedotnet_upgrade_resize_fields($dbman, $table);
+        enrol_authorizedotnet_upgrade_rename_fields($dbman, $table);
+        enrol_authorizedotnet_upgrade_migrate_clientkey();
 
         // Update plugin version.
         upgrade_plugin_savepoint(true, 2025090400, 'enrol', 'authorizedotnet');
@@ -59,7 +59,7 @@ function xmldb_enrol_authorizedotnet_upgrade($oldversion) {
  * @param database_manager $dbman
  * @param xmldb_table $table
  */
-function enrol_authorizedotnet_upgrade_2025090400_drop_fields(database_manager $dbman, xmldb_table $table) {
+function enrol_authorizedotnet_upgrade_drop_fields(database_manager $dbman, xmldb_table $table) {
     $fieldstodrop = [
         'tax',
         'duty',
@@ -83,7 +83,7 @@ function enrol_authorizedotnet_upgrade_2025090400_drop_fields(database_manager $
  * @param database_manager $dbman
  * @param xmldb_table $table
  */
-function enrol_authorizedotnet_upgrade_2025090400_resize_fields(database_manager $dbman, xmldb_table $table) {
+function enrol_authorizedotnet_upgrade_resize_fields(database_manager $dbman, xmldb_table $table) {
     $fieldstoresize = [
         ['response_code', XMLDB_TYPE_INTEGER, '10'],
         ['response_reason_code', XMLDB_TYPE_INTEGER, '10'],
@@ -105,7 +105,7 @@ function enrol_authorizedotnet_upgrade_2025090400_resize_fields(database_manager
  * @param database_manager $dbman
  * @param xmldb_table $table
  */
-function enrol_authorizedotnet_upgrade_2025090400_rename_fields(database_manager $dbman, xmldb_table $table) {
+function enrol_authorizedotnet_upgrade_rename_fields(database_manager $dbman, xmldb_table $table) {
     $fieldstorename = [
         'item_name' => ['itemname', XMLDB_TYPE_CHAR, '255', null, null, null, null],
         'payment_status' => ['paymentstatus', XMLDB_TYPE_CHAR, '255', null, null, null, null],
@@ -132,7 +132,7 @@ function enrol_authorizedotnet_upgrade_2025090400_rename_fields(database_manager
 /**
  * Carries over the public client key config from before the Accept.js switch.
  */
-function enrol_authorizedotnet_upgrade_2025090400_migrate_clientkey() {
+function enrol_authorizedotnet_upgrade_migrate_clientkey() {
     $oldclientkey = get_config('enrol_authorizedotnet', 'clientkey');
     if ($oldclientkey !== false) {
         set_config('publicclientkey', $oldclientkey, 'enrol_authorizedotnet');
