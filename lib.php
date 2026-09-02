@@ -390,7 +390,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @param int $oldid old instance id
      * @return void
      */
-    public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
+    public function restore_instance($step, stdClass $data, $course, $oldid) {
         global $DB;
         if (!$step->get_task()->get_target() == backup::TARGET_NEW_COURSE) {
             if (
@@ -424,7 +424,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @param int $oldinstancestatus previous instance status
      * @return void
      */
-    public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
+    public function restore_user_enrolment($step, $data, $instance, $userid, $oldinstancestatus) {
         unset($step, $oldinstancestatus);
         $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, $data->status);
     }
@@ -436,31 +436,8 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @param stdClass $ue user enrolment
      * @return array of user_enrolment_action
      */
-    public function get_user_enrolment_actions(course_enrolment_manager $manager, $ue) {
-        $actions = [];
-        $context = $manager->get_context();
-        $instance = $ue->enrolmentinstance;
-        $params = $manager->get_moodlepage()->url->params();
-        $params['ue'] = $ue->id;
-        if ($this->allow_unenrol($instance) && has_capability('enrol/authorizedotnet:unenrol', $context)) {
-            $url = new moodle_url('/enrol/unenroluser.php', $params);
-            $actions[] = new user_enrolment_action(
-                new pix_icon('t/delete', ''),
-                get_string('unenrol', 'enrol'),
-                $url,
-                ['class' => 'unenrollink', 'rel' => $ue->id]
-            );
-        }
-        if ($this->allow_manage($instance) && has_capability('enrol/authorizedotnet:manage', $context)) {
-            $url = new moodle_url('/enrol/editenrolment.php', $params);
-            $actions[] = new user_enrolment_action(
-                new pix_icon('t/edit', ''),
-                get_string('edit'),
-                $url,
-                ['class' => 'editenrollink', 'rel' => $ue->id]
-            );
-        }
-        return $actions;
+    public function get_user_enrolment_actions($manager, $ue) {
+        return enrolment_action_builder::build($this, $manager, $ue);
     }
 
     /**
