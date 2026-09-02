@@ -32,6 +32,13 @@ use enrol_authorizedotnet\authorizedotnet_helper;
  * Provides UI hooks, capabilities checks, and helper utilities
  * for handling enrolment via Authorize.net.
  *
+ * Note for PHP Mess Detector's TooManyPublicMethods / ExcessiveClassComplexity /
+ * CouplingBetweenObjects rules: the bulk of this class's public surface and
+ * dependencies come from mandatory enrol_plugin base-class overrides that Moodle
+ * core calls by type, so they can't be made non-public or removed without breaking
+ * the plugin. @SuppressWarnings is intentionally not used here as it is not a
+ * docblock tag recognised by the Moodle coding standard.
+ *
  * @package   enrol_authorizedotnet
  */
 class enrol_authorizedotnet_plugin extends enrol_plugin {
@@ -40,7 +47,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      *
      * @return string ISO-4217 currency code (e.g., "USD")
      */
-    public function get_merchant_currency() {
+    protected function get_merchant_currency() {
         $plugin = enrol_get_plugin('authorizedotnet');
         $helper = new authorizedotnet_helper(
             $plugin->get_config('loginid'),
@@ -57,6 +64,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return pix_icon[] list of icons
      */
     public function get_info_icons(array $instances) {
+        unset($instances);
         return [new pix_icon('icon', get_string('pluginname', 'enrol_authorizedotnet'), 'enrol_authorizedotnet')];
     }
 
@@ -76,6 +84,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return bool
      */
     public function allow_unenrol(stdClass $instance) {
+        unset($instance);
         return true;
     }
 
@@ -86,6 +95,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return bool
      */
     public function allow_manage(stdClass $instance) {
+        unset($instance);
         return true;
     }
 
@@ -182,7 +192,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return string HTML
      */
     public function enrol_page_hook(stdClass $instance) {
-        global $CFG, $USER, $OUTPUT, $DB, $PAGE;
+        global $USER, $OUTPUT, $DB, $PAGE;
 
         if ($DB->record_exists('user_enrolments', ['userid' => $USER->id, 'enrolid' => $instance->id])) {
             return '';
@@ -357,6 +367,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return array errors
      */
     public function edit_instance_validation($data, $files, $instance, $context) {
+        unset($files, $instance, $context);
         $errors = [];
 
         if (!empty($data['enrolenddate']) && $data['enrolenddate'] < $data['enrolstartdate']) {
@@ -414,6 +425,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @return void
      */
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
+        unset($step, $oldinstancestatus);
         $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, $data->status);
     }
 
@@ -490,11 +502,9 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @param stdClass $course course record
      * @param context $context course context
      * @param stdClass $user user record
-     * @param stdClass $enrollmentdata extra data (transaction etc.)
      * @return bool
      */
-    public function enroll_user_and_send_notifications($plugininstance, $course, $context, $user, $enrollmentdata) {
-        global $DB;
+    public function enroll_user_and_send_notifications($plugininstance, $course, $context, $user) {
         $plugin = enrol_get_plugin('authorizedotnet');
         $timestart = time();
         $timeend = $plugininstance->enrolperiod ? $timestart + $plugininstance->enrolperiod : 0;
@@ -516,7 +526,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @param string $fullmessagehtml html message
      * @return void
      */
-    public function send_message_custom(
+    protected function send_message_custom(
         $course,
         $userfrom,
         $userto,
@@ -555,7 +565,7 @@ class enrol_authorizedotnet_plugin extends enrol_plugin {
      * @param enrol_plugin $plugin
      * @return void
      */
-    public function send_enrollment_notifications($course, $context, $user, $plugin) {
+    protected function send_enrollment_notifications($course, $context, $user, $plugin) {
         global $CFG;
         $teacher = false;
         if ($users = get_users_by_capability($context, 'moodle/course:update', 'u.*', 'u.id ASC', '', '', '', '', false, true)) {

@@ -79,6 +79,12 @@ const switchSdk = (environment) => {
     });
 };
 
+/**
+ * Wires up the enrol button to launch the Authorize.Net Accept.js payment flow.
+ *
+ * @param {number} instanceid The enrol instance id.
+ * @param {number} userid The current user's id.
+ */
 function authorizeNetPayment(instanceid, userid) {
     const enrolButton = document.getElementById(`enrolbutton-${instanceid}`);
     if (!enrolButton) {
