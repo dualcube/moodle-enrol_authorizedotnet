@@ -1,259 +1,254 @@
-    .authorizedotnet-paymentcontainer {
-        background: transparent;
-        padding: 20px 0;
-        width: 100%;
-        max-width: 400px;
-        margin: 0 auto;
-    }
+.authorizedotnet-paymentcontainer {
+    background: transparent;
+    padding: 20px 0;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
 
-    .authorizedotnet-currencybox {
-        margin-bottom: 8px;
+.authorizedotnet-currencybox {
+    margin-bottom: 8px;
+}
+
+.authorizedotnet-currencyselected {
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #f1f1f1;
+    font-weight: bold;
+}
+
+.authorizedotnet-currencyselected img {
+    width: 20px;
+    height: 14px;
+    margin-right: 6px;
+}
+
+.authorizedotnet-note {
+    font-size: 12px;
+    color: gray;
+    margin-bottom: 20px;
+}
+
+.authorizedotnet-item,
+.authorizedotnet-subtotal,
+.authorizedotnet-discount,
+.authorizedotnet-total {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.authorizedotnet-itemtitle {
+    font-weight: bold;
+}
+
+.authorizedotnet-itemsubtitle,
+.authorizedotnet-discountnote {
+    font-size: 13px;
+    color: gray;
+    margin-bottom: 12px;
+}
+
+.authorizedotnet-line {
+    height: 1px;
+    background: #eee;
+    margin: 12px 0;
+}
+
+.authorizedotnet-tag {
+    background: #f1f1f1;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.authorizedotnet-discountamount {
+    color: rgb(167, 167, 167);
+}
+
+.authorizedotnet-couponsection {
+    margin: 18px 0 12px;
+    padding: 15px 0 12px;
+    border-top: 1px solid #eee;
+}
+
+.authorizedotnet-total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.authorizedotnet-coupon-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.authorizedotnet-couponsection input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.authorizedotnet-applybtn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 80px;
+    transition: all 0.2s ease;
+}
+
+.authorizedotnet-applybtn:hover {
+    background-color: #5a6268;
+}
+
+.authorizedotnet-couponmessage {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.authorizedotnet-error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .authorizedotnet-paymentcontainer {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px 10px;
     }
 
     .authorizedotnet-currencyselected {
-        display: inline-flex;
-        align-items: center;
-        border: 2px solid #ccc;
-        padding: 6px 12px;
-        border-radius: 6px;
-        background: #f1f1f1;
-        font-weight: bold;
+        font-size: 14px;
+        padding: 8px 12px;
     }
 
     .authorizedotnet-currencyselected img {
-        width: 20px;
-        height: 14px;
-        margin-right: 6px;
-    }
-
-    .authorizedotnet-note {
-        font-size: 12px;
-        color: gray;
-        margin-bottom: 20px;
-    }
-
-    .authorizedotnet-item, .authorizedotnet-subtotal, .authorizedotnet-discount, .authorizedotnet-total {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 6px;
+        width: 18px;
+        height: 12px;
     }
 
     .authorizedotnet-itemtitle {
-        font-weight: bold;
-    }
-
-    .authorizedotnet-itemsubtitle, .authorizedotnet-discountnote {
-        font-size: 13px;
-        color: gray;
-        margin-bottom: 12px;
-    }
-
-    .authorizedotnet-line {
-        height: 1px;
-        background: #eee;
-        margin: 12px 0;
-    }
-
-    .authorizedotnet-tag {
-        background: #f1f1f1;
-        padding: 3px 8px;
-        border-radius: 6px;
         font-size: 14px;
-    }
-
-    .authorizedotnet-discountamount {
-        color:rgb(167, 167, 167);
-    }
-
-    .authorizedotnet-couponsection {
-        margin: 18px 0 12px 0;
-        padding: 15px 0 12px 0;
-        border-top: 1px solid #eee;
-    }
-
-    .authorizedotnet-total {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #eee;
     }
 
     .authorizedotnet-coupon-input-group {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: 6px;
     }
 
     .authorizedotnet-couponsection input {
-        flex: 1;
-        padding: 8px 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 14px;
-        box-sizing: border-box;
+        padding: 10px 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
     }
 
     .authorizedotnet-applybtn {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        font-size: 14px;
-        border-radius: 4px;
-        cursor: pointer;
-        white-space: nowrap;
-        min-width: 80px;
-    }
-
-    .authorizedotnet-applybtn:hover {
-        background-color: #5a6268;
-    }
-
-    .authorizedotnet-couponmessage {
-        font-size: 12px;
-        margin-top: 5px;
-    }
-
-    .authorizedotnet-error-message {
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 8px 12px;
-        border-radius: 4px;
-        margin: 10px 0;
-        font-size: 14px;
-    }
-
-    .authorizedotnet-pay-btn:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .authorizedotnet-paymentcontainer {
-            width: 100%;
-            max-width: 100%;
-            padding: 15px 10px;
-        }
-
-        .authorizedotnet-currencyselected {
-            font-size: 14px;
-            padding: 8px 12px;
-        }
-
-        .authorizedotnet-currencyselected img {
-            width: 18px;
-            height: 12px;
-        }
-
-        .authorizedotnet-itemtitle {
-            font-size: 14px;
-        }
-
-        .authorizedotnet-coupon-input-group {
-            gap: 6px;
-        }
-
-        .authorizedotnet-couponsection input {
-            padding: 10px 12px;
-            font-size: 16px; /* Prevents zoom on iOS */
-        }
-
-        .authorizedotnet-applybtn {
-            padding: 10px 12px;
-            font-size: 16px;
-            min-width: 70px;
-        }
-
-        .authorizedotnet-pay-btn {
-            padding: 14px 0;
-            font-size: 18px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .authorizedotnet-paymentcontainer {
-            padding: 10px 5px;
-        }
-
-        .authorizedotnet-currencyselected {
-            font-size: 13px;
-            padding: 6px 10px;
-        }
-
-        .authorizedotnet-item, .authorizedotnet-subtotal, .authorizedotnet-discount, .authorizedotnet-total {
-            font-size: 14px;
-        }
-
-        .authorizedotnet-coupon-input-group {
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .authorizedotnet-applybtn {
-            width: 100%;
-            min-width: auto;
-        }
-
-        .authorizedotnet-couponsection {
-            margin: 15px 0 10px 0;
-            padding: 12px 0 10px 0;
-        }
-    }
-
-    /* Interactive Elements */
-    .authorizedotnet-applybtn:active {
-        transform: translateY(1px);
-        background-color: #495057;
-    }
-
-    .authorizedotnet-couponsection input:focus {
-        outline: none;
-        border-color: #0070f3;
-        box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
-    }
-
-    /* Smooth transitions */
-    .authorizedotnet-applybtn, .authorizedotnet-pay-btn {
-        transition: all 0.2s ease;
-    }
-
-    .authorizedotnet-couponsection input {
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    /* Payment button styling */
-    .authorizedotnet-pay-btn {
-        margin-top: 18px;
-        width: 100%;
-        background-color: #0070f3;
-        color: white;
-        border: none;
-        padding: 12px 0;
+        padding: 10px 12px;
         font-size: 16px;
-        font-weight: bold;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s ease;
+        min-width: 70px;
     }
 
-    .authorizedotnet-pay-btn:hover {
-        background-color: #005fd1;
-        filter: brightness(0.9);
+    .authorizedotnet-pay-btn {
+        padding: 14px 0;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .authorizedotnet-paymentcontainer {
+        padding: 10px 5px;
     }
 
-    .authorizedotnet-pay-btn:active {
-        transform: translateY(1px);
-        background-color: #004bb5;
-        filter: brightness(0.8);
+    .authorizedotnet-currencyselected {
+        font-size: 13px;
+        padding: 6px 10px;
     }
 
-    .authorizedotnet-pay-btn:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-        transform: none;
+    .authorizedotnet-item,
+    .authorizedotnet-subtotal,
+    .authorizedotnet-discount,
+    .authorizedotnet-total {
+        font-size: 14px;
     }
 
-    /* Utility classes */
-    .authorizedotnet-hidden {
-        display: none ;
+    .authorizedotnet-coupon-input-group {
+        flex-direction: column;
+        gap: 8px;
     }
+
+    .authorizedotnet-applybtn {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .authorizedotnet-couponsection {
+        margin: 15px 0 10px;
+        padding: 12px 0 10px;
+    }
+}
+
+/* Interactive Elements */
+.authorizedotnet-applybtn:active {
+    transform: translateY(1px);
+    background-color: #495057;
+}
+
+.authorizedotnet-couponsection input:focus {
+    outline: none;
+    border-color: #0070f3;
+    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+}
+
+/* Payment button styling */
+.authorizedotnet-pay-btn {
+    margin-top: 18px;
+    width: 100%;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.authorizedotnet-pay-btn:hover {
+    background-color: #005fd1;
+    filter: brightness(0.9);
+}
+
+.authorizedotnet-pay-btn:active {
+    transform: translateY(1px);
+    background-color: #004bb5;
+    filter: brightness(0.8);
+}
+
+.authorizedotnet-pay-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Utility classes */
+.authorizedotnet-hidden {
+    display: none;
+}

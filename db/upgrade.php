@@ -39,79 +39,103 @@ function xmldb_enrol_authorizedotnet_upgrade($oldversion) {
     // The version number should be greater than the last version in install.xml
     // and any previous upgrade scripts. We will use a version after the one you provided.
     if ($oldversion < 2025090400) {
-        // Define table enrol_authorizedotnet to be modified.
         $table = new xmldb_table('enrol_authorizedotnet');
 
-        // Drop redundant fields that are not used with the new Accept.js API.
-        $fieldstodrop = [
-            'tax',
-            'duty',
-            'method',
-            'account_number',
-            'card_type',
-            'fax',
-            'state',
-        ];
-
-        foreach ($fieldstodrop as $fieldname) {
-            if ($dbman->field_exists($table, $fieldname)) {
-                $dbman->drop_field($table, new xmldb_field($fieldname));
-            }
-        }
-
-        $field = new xmldb_field('response_code', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_precision($table, $field);
-        }
-
-        $field = new xmldb_field('response_reason_code', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_precision($table, $field);
-        }
-
-        $field = new xmldb_field('auth_code', XMLDB_TYPE_CHAR, '30', null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_precision($table, $field);
-        }
-
-        $field = new xmldb_field('payment_status', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_precision($table, $field);
-        }
-        // Fields to rename (remove underscores).
-        $fieldstorename = [
-            'item_name' => ['itemname', XMLDB_TYPE_CHAR, '255', null, null, null, null],
-            'payment_status' => ['paymentstatus', XMLDB_TYPE_CHAR, '255', null, null, null, null],
-            'response_code' => ['responsecode', XMLDB_TYPE_INTEGER, '10', null, null, null, null],
-            'response_reason_code' => ['responsereasoncode', XMLDB_TYPE_INTEGER, '10', null, null, null, null],
-            'response_reason_text' => ['responsereasontext', XMLDB_TYPE_CHAR, '255', null, null, null, null],
-            'auth_code' => ['authcode', XMLDB_TYPE_CHAR, '30', null, null, null, null],
-            'trans_id' => ['transid', XMLDB_TYPE_CHAR, '255', null, null, null, null],
-            'invoice_num' => ['invoicenum', XMLDB_TYPE_CHAR, '255', null, null, null, null],
-            'test_request' => ['testrequest', XMLDB_TYPE_INTEGER, '1', null, null, null, null],
-            'first_name' => ['firstname', XMLDB_TYPE_CHAR, '255', null, null, null, null],
-            'last_name' => ['lastname', XMLDB_TYPE_CHAR, '255', null, null, null, null],
-            'auth_json' => ['authjson', XMLDB_TYPE_TEXT, null, null, null, null, null],
-        ];
-
-        foreach ($fieldstorename as $oldname => [$newname, $type, $length, $decimals, $notnull, $sequence, $default]) {
-            $field = new xmldb_field($oldname, $type, $length, $decimals, $notnull, $sequence, $default);
-            if ($dbman->field_exists($table, $field)) {
-                $dbman->rename_field($table, $field, $newname);
-            }
-        }
-
-        // Carry over the public client key from the old config name used before
-        // the switch to the Accept.js-based checkout flow.
-        $oldclientkey = get_config('enrol_authorizedotnet', 'clientkey');
-        if ($oldclientkey !== false) {
-            set_config('publicclientkey', $oldclientkey, 'enrol_authorizedotnet');
-            unset_config('clientkey', 'enrol_authorizedotnet');
-        }
+        enrol_authorizedotnet_upgrade_drop_fields($dbman, $table);
+        enrol_authorizedotnet_upgrade_resize_fields($dbman, $table);
+        enrol_authorizedotnet_upgrade_rename_fields($dbman, $table);
+        enrol_authorizedotnet_upgrade_migrate_clientkey();
 
         // Update plugin version.
         upgrade_plugin_savepoint(true, 2025090400, 'enrol', 'authorizedotnet');
     }
 
     return true;
+}
+
+/**
+ * Drops fields that are no longer used with the Accept.js API.
+ *
+ * @param database_manager $dbman
+ * @param xmldb_table $table
+ */
+function enrol_authorizedotnet_upgrade_drop_fields(database_manager $dbman, xmldb_table $table) {
+    $fieldstodrop = [
+        'tax',
+        'duty',
+        'method',
+        'account_number',
+        'card_type',
+        'fax',
+        'state',
+    ];
+
+    foreach ($fieldstodrop as $fieldname) {
+        if ($dbman->field_exists($table, $fieldname)) {
+            $dbman->drop_field($table, new xmldb_field($fieldname));
+        }
+    }
+}
+
+/**
+ * Widens fields whose precision changed with the Accept.js API.
+ *
+ * @param database_manager $dbman
+ * @param xmldb_table $table
+ */
+function enrol_authorizedotnet_upgrade_resize_fields(database_manager $dbman, xmldb_table $table) {
+    $fieldstoresize = [
+        ['response_code', XMLDB_TYPE_INTEGER, '10'],
+        ['response_reason_code', XMLDB_TYPE_INTEGER, '10'],
+        ['auth_code', XMLDB_TYPE_CHAR, '30'],
+        ['payment_status', XMLDB_TYPE_CHAR, '255'],
+    ];
+
+    foreach ($fieldstoresize as [$fieldname, $type, $length]) {
+        $field = new xmldb_field($fieldname, $type, $length, null, null, null, null);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+        }
+    }
+}
+
+/**
+ * Renames fields to remove underscores, matching the plugin's updated schema.
+ *
+ * @param database_manager $dbman
+ * @param xmldb_table $table
+ */
+function enrol_authorizedotnet_upgrade_rename_fields(database_manager $dbman, xmldb_table $table) {
+    $fieldstorename = [
+        'item_name' => ['itemname', XMLDB_TYPE_CHAR, '255', null, null, null, null],
+        'payment_status' => ['paymentstatus', XMLDB_TYPE_CHAR, '255', null, null, null, null],
+        'response_code' => ['responsecode', XMLDB_TYPE_INTEGER, '10', null, null, null, null],
+        'response_reason_code' => ['responsereasoncode', XMLDB_TYPE_INTEGER, '10', null, null, null, null],
+        'response_reason_text' => ['responsereasontext', XMLDB_TYPE_CHAR, '255', null, null, null, null],
+        'auth_code' => ['authcode', XMLDB_TYPE_CHAR, '30', null, null, null, null],
+        'trans_id' => ['transid', XMLDB_TYPE_CHAR, '255', null, null, null, null],
+        'invoice_num' => ['invoicenum', XMLDB_TYPE_CHAR, '255', null, null, null, null],
+        'test_request' => ['testrequest', XMLDB_TYPE_INTEGER, '1', null, null, null, null],
+        'first_name' => ['firstname', XMLDB_TYPE_CHAR, '255', null, null, null, null],
+        'last_name' => ['lastname', XMLDB_TYPE_CHAR, '255', null, null, null, null],
+        'auth_json' => ['authjson', XMLDB_TYPE_TEXT, null, null, null, null, null],
+    ];
+
+    foreach ($fieldstorename as $oldname => [$newname, $type, $length, $decimals, $notnull, $sequence, $default]) {
+        $field = new xmldb_field($oldname, $type, $length, $decimals, $notnull, $sequence, $default);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, $newname);
+        }
+    }
+}
+
+/**
+ * Carries over the public client key config from before the Accept.js switch.
+ */
+function enrol_authorizedotnet_upgrade_migrate_clientkey() {
+    $oldclientkey = get_config('enrol_authorizedotnet', 'clientkey');
+    if ($oldclientkey !== false) {
+        set_config('publicclientkey', $oldclientkey, 'enrol_authorizedotnet');
+        unset_config('clientkey', 'enrol_authorizedotnet');
+    }
 }

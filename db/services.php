@@ -40,18 +40,16 @@ $services = [
 
 $functions = [
     'moodle_authorizedotnet_get_config_for_js' => [
-        'classname'   => 'enrol_authorizedotnet_externallib',
-        'methodname'  => 'get_config_for_js',
-        'classpath'   => 'enrol/authorizedotnet/externallib.php',
+        'classname'   => 'enrol_authorizedotnet\external\get_payment_config',
+        'methodname'  => 'execute',
         'description' => 'Get the configuration necessary for the client-side JavaScript.',
         'type'        => 'read',
         'ajax'        => true,
         'loginrequired' => true,
     ],
     'moodle_authorizedotnet_process_payment' => [
-        'classname'   => 'enrol_authorizedotnet_externallib',
-        'methodname'  => 'process_payment',
-        'classpath'   => 'enrol/authorizedotnet/externallib.php',
+        'classname'   => 'enrol_authorizedotnet\external\process_payment',
+        'methodname'  => 'execute',
         'description' => 'Process a payment with opaque data from Authorize.Net.',
         'type'        => 'write',
         'ajax'        => true,
