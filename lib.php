@@ -25,6 +25,7 @@
 
 use core_enrol\output\enrol_page;
 use enrol_authorizedotnet\authorizedotnet_helper;
+use enrol_authorizedotnet\enrolment_action_builder;
 use enrol_authorizedotnet\plugin_base;
 
 /**
